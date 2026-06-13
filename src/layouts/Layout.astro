@@ -10,17 +10,22 @@ interface Props {
   keywords?: string;
   schemaMarkup?: Record<string, any> | Record<string, any>[];
   theme?: 'light' | 'dark';
+  image?: string;
+  noindex?: boolean;
 }
 
 const {
   title = "Online Angle Finder | Measure Angles from Photos Free",
   description = "A free, web-based angle measurement tool. Upload an image or use your webcam to easily find angles between two lines, roof pitches, or woodwork miters.",
-  keywords = "online angle finder, measure angle from photo online, angle measurement tool free, find angle between two lines online, measure roof pitch angle from photo, woodworking angle finder online",
+  keywords = "online angle finder, measure angle from photo online, angle measurement tool free, find angles between two lines online, measure roof pitch angle from photo, woodworking angle finder online",
   schemaMarkup,
   theme = 'light',
+  image = 'https://anglefinderonline.com/logo.svg',
+  noindex = false,
 } = Astro.props;
 
-const canonicalURL = new URL(Astro.url.pathname, 'https://anglefinderonline.com');
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const ogImage = image.startsWith('http') ? image : new URL(image, Astro.site).toString();
 
 // Format schema markup to ensure it can be injected safely
 const schemaString = schemaMarkup 
@@ -29,7 +34,7 @@ const schemaString = schemaMarkup
 ---
 
 <!doctype html>
-<html lang="en" class="scroll-smooth selection:bg-primary selection:text-white scroll-pt-20">
+<html lang="en" class="selection:bg-primary selection:text-white scroll-pt-20">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -41,21 +46,26 @@ const schemaString = schemaMarkup
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="keywords" content={keywords} />
+    <meta name="author" content="Online Angle Finder" />
     <link rel="canonical" href={canonicalURL} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content={Astro.url} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content="https://anglefinderonline.com/og-image.png" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="Online Angle Finder" />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content={Astro.url} />
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content="https://anglefinderonline.com/og-image.png" />
+    <meta property="twitter:image" content={ogImage} />
 
     <!-- Google Fonts: Inter for geometric sans, JetBrains Mono for monospace -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -70,8 +80,7 @@ const schemaString = schemaMarkup
       (function() {
         try {
           const storedTheme = localStorage.getItem('anglefinder-theme');
-          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-          const shouldUseDark = storedTheme === 'dark' || (!storedTheme && prefersDark);
+          const shouldUseDark = storedTheme === 'dark';
           if (shouldUseDark) {
             document.documentElement.classList.add('dark');
           }
@@ -83,14 +92,13 @@ const schemaString = schemaMarkup
 
   </head>
   <body class="flex min-h-screen flex-col bg-canvas-soft dark:bg-[#0D1117] text-ink dark:text-slate-100 antialiased">
-
-
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:bg-[#171717] focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:font-semibold">Skip to main content</a>
 
     <!-- Header Navigation -->
     <Header theme={theme} />
 
     <!-- Main Content -->
-    <main class="flex-grow">
+    <main id="main-content" class="flex-grow">
       <slot />
     </main>
 

@@ -4,9 +4,15 @@ import { Mail, MessageSquare } from '@lucide/astro';
 
 const pageTitle = "Contact Us | Online Angle Finder";
 const pageDescription = "Get in touch with the team at Online Angle Finder. Leave suggestions, report bugs, or ask clarifying geometry questions.";
+const pageKeywords = "contact online angle finder, feedback, bug report, feature request, geometry tool support";
 ---
 
-<Layout title={pageTitle} description={pageDescription}>
+<Layout 
+  title={pageTitle} 
+  description={pageDescription} 
+  keywords={pageKeywords}
+  image="https://anglefinderonline.com/og-image.png"
+>
   <section class="py-16 md:py-24 bg-canvas-soft">
     <div class="mx-auto max-w-xl px-4">
       <div class="text-center mb-10">

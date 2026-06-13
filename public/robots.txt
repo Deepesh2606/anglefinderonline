@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /functions/
 
-Sitemap: https://anglefinderonline.com/sitemap.xml
+Sitemap: https://anglefinderonline.com/sitemap-index.xml

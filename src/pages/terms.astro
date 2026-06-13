@@ -3,9 +3,15 @@ import Layout from '../layouts/Layout.astro';
 
 const pageTitle = "Terms of Service | Online Angle Finder";
 const pageDescription = "Review the Terms of Service for Online Angle Finder. Free online geometry utility tools provided as-is.";
+const pageKeywords = "terms of service, user agreement, disclaimer, woodworking tool terms, roofing calculator terms";
 ---
 
-<Layout title={pageTitle} description={pageDescription}>
+<Layout 
+  title={pageTitle} 
+  description={pageDescription} 
+  keywords={pageKeywords}
+  noindex={true}
+>
   <section class="py-16 bg-canvas-soft">
     <div class="mx-auto max-w-3xl px-4">
       <div class="bg-white border border-hairline rounded-2xl p-8 md:p-12 shadow-vercel-3 text-left space-y-6">

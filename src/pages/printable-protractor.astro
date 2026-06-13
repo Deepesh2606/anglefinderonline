@@ -4,6 +4,7 @@ import { Printer, ArrowLeft } from '@lucide/astro';
 
 const pageTitle = "Free Printable Protractor (PDF & SVG) | 100% Actual Scale";
 const pageDescription = "Download and print a free, high-resolution vector protractor template. Fits standard A4 or Letter size paper at exactly 100% actual scale. Perfect for school math homework and geometry.";
+const pageKeywords = "free printable protractor, protractor pdf, 100% scale protractor, actual size protractor, printable geometry tools";
 
 // Pre-calculate vector ticks and labels for the SVG protractor
 const ticks = [];
@@ -66,7 +67,12 @@ for (let i = 0; i <= 180; i++) {
 }
 ---
 
-<Layout title={pageTitle} description={pageDescription}>
+<Layout 
+  title={pageTitle} 
+  description={pageDescription} 
+  keywords={pageKeywords}
+  image="https://anglefinderonline.com/og-image.png"
+>
   <!-- Main layout container: hidden when printing, except for .printable-area -->
   <div class="py-12 md:py-16 bg-canvas-soft min-h-screen no-print">
     <div class="mx-auto max-w-4xl px-4 sm:px-6">
@@ -123,22 +129,23 @@ for (let i = 0; i <= 180; i++) {
             
             <div class="w-full max-w-[480px]">
               <!-- We include the print ID to isolate this for printing -->
-              <svg 
+               <svg 
                 id="printable-protractor-svg" 
                 viewBox="0 0 500 280" 
-                class="protractor-print-svg w-full h-auto drop-shadow-md select-none text-neutral-800 dark:text-neutral-200 transition-colors"
+                class="protractor-print-svg w-full h-auto drop-shadow-md select-none transition-colors"
                 fill="none" 
-                stroke="currentColor"
+                stroke="#171717"
+                style="color: #171717;"
               >
                 <!-- Double outer arc rings -->
-                <path d="M 30 240 A 220 220 0 0 1 470 240" stroke-width="1.5" />
-                <path d="M 35 240 A 215 215 0 0 1 465 240" stroke-width="0.75" />
-                <path d="M 40 240 A 210 210 0 0 1 460 240" stroke-width="0.5" />
+                <path d="M 30 240 A 220 220 0 0 0 470 240" stroke-width="2" />
+                <path d="M 35 240 A 215 215 0 0 0 465 240" stroke-width="1" />
+                <path d="M 40 240 A 210 210 0 0 0 460 240" stroke-width="0.75" />
                 
                 <!-- Inner arc lines around labels -->
-                <path d="M 65 240 A 185 185 0 0 1 435 240" stroke-width="0.5" stroke-dasharray="3,3" class="opacity-50" />
-                <path d="M 80 240 A 170 170 0 0 1 420 240" stroke-width="1" />
-                <path d="M 92 240 A 158 158 0 0 1 408 240" stroke-width="0.75" />
+                <path d="M 65 240 A 185 185 0 0 0 435 240" stroke-width="0.75" stroke-dasharray="3,3" opacity="0.6" />
+                <path d="M 80 240 A 170 170 0 0 0 420 240" stroke-width="1.25" />
+                <path d="M 92 240 A 158 158 0 0 0 408 240" stroke-width="1" />
                 
                 <!-- Base Baseline -->
                 <line x1="20" y1="240" x2="480" y2="240" stroke-width="2" />
@@ -284,21 +291,22 @@ for (let i = 0; i <= 180; i++) {
   <!-- Print-only block: Only rendered by printer, hides headers, margins, buttons -->
   <div class="print-only-container">
     <div class="printable-area-wrapper">
-      <svg 
-        viewBox="0 0 500 280" 
-        class="protractor-print-svg print-only-svg"
-        fill="none" 
-        stroke="black"
-      >
-        <!-- Double outer arc rings -->
-        <path d="M 30 240 A 220 220 0 0 1 470 240" stroke-width="1.5" />
-        <path d="M 35 240 A 215 215 0 0 1 465 240" stroke-width="0.75" />
-        <path d="M 40 240 A 210 210 0 0 1 460 240" stroke-width="0.5" />
-        
-        <!-- Inner arc lines around labels -->
-        <path d="M 65 240 A 185 185 0 0 1 435 240" stroke-width="0.5" stroke-dasharray="3,3" />
-        <path d="M 80 240 A 170 170 0 0 1 420 240" stroke-width="1" />
-        <path d="M 92 240 A 158 158 0 0 1 408 240" stroke-width="0.75" />
+        <svg 
+          viewBox="0 0 500 280" 
+          class="protractor-print-svg print-only-svg"
+          fill="none" 
+          stroke="black"
+          style="color: #000;"
+        >
+          <!-- Double outer arc rings -->
+          <path d="M 30 240 A 220 220 0 0 0 470 240" stroke-width="2" />
+          <path d="M 35 240 A 215 215 0 0 0 465 240" stroke-width="1" />
+          <path d="M 40 240 A 210 210 0 0 0 460 240" stroke-width="0.75" />
+          
+          <!-- Inner arc lines around labels -->
+          <path d="M 65 240 A 185 185 0 0 0 435 240" stroke-width="0.75" stroke-dasharray="3,3" opacity="0.6" />
+          <path d="M 80 240 A 170 170 0 0 0 420 240" stroke-width="1.25" />
+          <path d="M 92 240 A 158 158 0 0 0 408 240" stroke-width="1" />
         
         <!-- Base Baseline -->
         <line x1="20" y1="240" x2="480" y2="240" stroke-width="2" />

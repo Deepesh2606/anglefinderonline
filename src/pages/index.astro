@@ -91,7 +91,7 @@ const faqSchema = {
     name: faq.question,
     acceptedAnswer: {
       "@type": "Answer",
-      text: faq.answer,
+      text: faq.answer.replace(/<[^>]*>/g, ""),
     },
   })),
 };
@@ -207,7 +207,7 @@ const comparisonData = [
           custom angles
         </p>
       </div>
-      <ImageAngleFinder />
+      <ImageAngleFinder client:visible />
     </div>
   </section>
 

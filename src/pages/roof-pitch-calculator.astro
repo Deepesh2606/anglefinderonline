@@ -40,7 +40,13 @@ const schemaMarkup = {
 };
 ---
 
-<Layout title={pageTitle} description={pageDescription} keywords={pageKeywords} schemaMarkup={schemaMarkup}>
+<Layout 
+  title={pageTitle} 
+  description={pageDescription} 
+  keywords={pageKeywords} 
+  schemaMarkup={schemaMarkup}
+  image="https://anglefinderonline.com/og-image.png"
+>
   <!-- Hero / Header -->
   <section class="py-12 bg-canvas-soft">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center mb-8">
@@ -134,7 +140,7 @@ const schemaMarkup = {
         </p>
       </div>
 
-      <ImageAngleFinder />
+      <ImageAngleFinder client:visible />
       
       <!-- Specialized Help for Roof Pitch -->
       <div class="mx-auto max-w-3xl mt-4 bg-canvas-soft border border-hairline rounded-xl p-4 flex gap-3">

@@ -4,9 +4,15 @@ import { Shield, Sparkles, Heart } from '@lucide/astro';
 
 const pageTitle = "About Us | Online Angle Finder";
 const pageDescription = "Learn about the mission behind Online Angle Finder. We provide a clean, ad-free, high-precision geometry utility tool that processes files 100% locally.";
+const pageKeywords = "about online angle finder, privacy-focused geometry tool, free ad-free protractor, browser-based measurement utility";
 ---
 
-<Layout title={pageTitle} description={pageDescription}>
+<Layout 
+  title={pageTitle} 
+  description={pageDescription} 
+  keywords={pageKeywords}
+  image="https://anglefinderonline.com/og-image.png"
+>
   <section class="py-16 md:py-24 bg-canvas-soft">
     <div class="mx-auto max-w-3xl px-4 text-center mb-12">
       <span class="font-mono text-xs font-semibold uppercase tracking-wider text-link bg-link-bg-soft px-3 py-1 rounded-full">

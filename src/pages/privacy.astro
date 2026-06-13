@@ -3,9 +3,15 @@ import Layout from '../layouts/Layout.astro';
 
 const pageTitle = "Privacy Policy | Online Angle Finder";
 const pageDescription = "Read the Privacy Policy for Online Angle Finder. We process all images and video data locally on your device; we never upload your files.";
+const pageKeywords = "privacy policy, data security, local processing, image privacy, online angle finder privacy";
 ---
 
-<Layout title={pageTitle} description={pageDescription}>
+<Layout 
+  title={pageTitle} 
+  description={pageDescription} 
+  keywords={pageKeywords}
+  noindex={true}
+>
   <section class="py-16 bg-canvas-soft">
     <div class="mx-auto max-w-3xl px-4">
       <div class="bg-white border border-hairline rounded-2xl p-8 md:p-12 shadow-vercel-3 text-left space-y-6">

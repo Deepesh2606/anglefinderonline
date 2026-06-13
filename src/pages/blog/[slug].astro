@@ -15,7 +15,7 @@ const { post } = Astro.props;
 const { Content } = await render(post);
 ---
 
-<Layout title={`${post.data.title} | Blog`} description={post.data.description}>
+<Layout title={`${post.data.title} | Blog`} description={post.data.description} keywords={post.data.tags.join(', ')}>
   <article class="py-16 md:py-24 bg-canvas-soft">
     <div class="mx-auto max-w-3xl px-4">
       

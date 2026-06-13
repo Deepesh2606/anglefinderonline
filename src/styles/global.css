@@ -250,9 +250,26 @@ html {
   }
 }
 
-/* Smooth scrolling for anchor links */
+/* Avoid scroll-behavior: smooth because it can cause scroll jank on some devices */
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
+}
+
+/* Keep the page responsive without risking scroll/jank from aggressive rendering optimizations */
+@media (min-width: 768px) {
+  section {
+    content-visibility: auto;
+    /* smaller intrinsic size reduces layout/paint surprises */
+    contain-intrinsic-size: 300px;
+  }
+}
+
+/* Contain expensive repaints for interactive components */
+#protractor-svg,
+#webcam-svg-overlay,
+#canvas-container,
+#camera-container {
+  contain: layout paint style;
 }
 
 /* Reduce motion for users who prefer it */

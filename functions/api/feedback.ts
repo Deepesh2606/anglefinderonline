@@ -20,13 +20,13 @@ export const onRequestPost: PagesFunction = async (context) => {
 
     // OPTION 1: Save to Cloudflare KV (requires KV namespace binding)
     // If you bind a KV namespace named 'SUGGESTIONS' to your Pages project:
-    // if (context.env.SUGGESTIONS) {
-    //   const key = `feedback:${Date.now()}:${data.email}`;
-    //   await context.env.SUGGESTIONS.put(key, JSON.stringify({
-    //     ...data,
-    //     timestamp: new Date().toISOString()
-    //   }));
-    // }
+    if (context.env.SUGGESTIONS) {
+      const key = `feedback:${Date.now()}:${data.email}`;
+      await context.env.SUGGESTIONS.put(key, JSON.stringify({
+        ...data,
+        timestamp: new Date().toISOString()
+      }));
+    }
 
     // OPTION 2: Forward to Discord/Slack via Webhook
     // If you configure a DISCORD_WEBHOOK env variable in your Cloudflare Pages dashboard:

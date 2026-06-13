@@ -94,23 +94,23 @@ import { RotateCcw, Camera, Upload, Trash2, Sliders, Layers, Info } from '@lucid
       <div>
         <span class="font-mono text-xs uppercase tracking-[0.1em] text-mute">Calculated Angle</span>
         <div class="flex items-baseline gap-2 mt-1">
-          <h2 class="font-sans text-5xl font-semibold tracking-[-0.04em] text-ink" id="angle-readout">
-            <span>90.0</span><span class="text-3xl text-mute">°</span>
-          </h2>
+      <h2 class="font-sans text-5xl font-semibold tracking-[-0.04em] text-ink" id="angle-readout" aria-live="polite" aria-atomic="true">
+        <span>90.0</span><span class="text-3xl text-mute">°</span>
+      </h2>
         </div>
       </div>
       
       <div class="flex flex-col gap-2 mt-3">
-        <button id="btn-reset" class="w-full py-2 rounded-xl flex items-center justify-center gap-2 font-semibold text-base bg-white text-[#171717] border border-[#ebebeb] hover:bg-[#171717] hover:text-white hover:border-[#171717] transition-all active:scale-[0.98]">
-          <RotateCcw class="h-4.5 w-4.5" />
+        <button id="btn-reset" class="w-full py-2 rounded-xl flex items-center justify-center gap-2 font-semibold text-base bg-white text-[#171717] border border-[#ebebeb] transition-all active:scale-[0.98]">
+          <RotateCcw class="h-[18px] w-[18px]" />
           Reset Workspace
         </button>
         
         <div class="grid grid-cols-2 gap-2">
-          <button id="btn-decrement" class="py-2 rounded-xl font-bold text-sm bg-white text-[#171717] border border-[#ebebeb] hover:bg-[#171717] hover:text-white hover:border-[#171717] transition-all active:scale-[0.98] shadow-sm">
+          <button id="btn-decrement" class="py-2 rounded-xl font-bold text-sm bg-white text-[#171717] border border-[#ebebeb] transition-all active:scale-[0.98] shadow-sm">
             -1° FINE TUNE
           </button>
-          <button id="btn-increment" class="py-2 rounded-xl font-bold text-sm bg-white text-[#171717] border border-[#ebebeb] hover:bg-[#171717] hover:text-white hover:border-[#171717] transition-all active:scale-[0.98] shadow-sm">
+          <button id="btn-increment" class="py-2 rounded-xl font-bold text-sm bg-white text-[#171717] border border-[#ebebeb] transition-all active:scale-[0.98] shadow-sm">
             +1° FINE TUNE
           </button>
         </div>
@@ -121,7 +121,7 @@ import { RotateCcw, Camera, Upload, Trash2, Sliders, Layers, Info } from '@lucid
       <!-- Snapping -->
       <div class="p-4 rounded-2xl border border-hairline flex flex-col gap-2 bg-white">
         <div class="flex items-center gap-2">
-          <Sliders class="h-4.5 w-4.5 text-mute" />
+          <Sliders class="h-[18px] w-[18px] text-mute" />
           <h3 class="font-mono text-xs font-bold uppercase tracking-wider text-ink">Snapping</h3>
         </div>
 
@@ -138,24 +138,24 @@ import { RotateCcw, Camera, Upload, Trash2, Sliders, Layers, Info } from '@lucid
       <!-- Visual Settings -->
       <div class="p-4 rounded-2xl border border-hairline space-y-2 bg-white">
         <div class="flex items-center gap-2">
-          <Layers class="h-4.5 w-4.5 text-mute" />
+          <Layers class="h-[18px] w-[18px] text-mute" />
           <h3 class="font-mono text-xs font-bold uppercase tracking-wider text-ink">Configuration</h3>
         </div>
 
         <div class="grid grid-cols-1 gap-2">
-          <button id="toggle-reflex" class="flex items-center justify-between p-3 rounded-xl border border-[#ebebeb] hover:border-[#171717] transition-all">
+          <button id="toggle-reflex" role="switch" aria-checked="false" class="flex items-center justify-between p-3 rounded-xl border border-[#ebebeb] hover:border-[#171717] transition-all">
             <div class="flex items-center gap-1.5">
               <span class="text-sm font-semibold text-ink">Reflex</span>
             </div>
             <span id="toggle-reflex-label" class="text-sm font-mono text-mute">OFF</span>
           </button>
-          <button id="toggle-radians" class="flex items-center justify-between p-3 rounded-xl border border-[#ebebeb] hover:border-[#171717] transition-all">
+          <button id="toggle-radians" role="switch" aria-checked="false" class="flex items-center justify-between p-3 rounded-xl border border-[#ebebeb] hover:border-[#171717] transition-all">
             <div class="flex items-center gap-1.5">
               <span class="text-sm font-semibold text-ink">Radians</span>
             </div>
             <span id="toggle-radians-label" class="text-sm font-mono text-mute">OFF</span>
           </button>
-          <button id="toggle-lock-center" class="flex items-center justify-between p-3 rounded-xl border border-[#171717] bg-[#171717]/5 transition-all">
+          <button id="toggle-lock-center" role="switch" aria-checked="true" class="flex items-center justify-between p-3 rounded-xl border border-[#171717] bg-[#171717]/5 transition-all">
             <div class="flex items-center gap-1.5">
               <span class="text-sm font-semibold text-ink">Lock Pivot</span>
             </div>
@@ -169,25 +169,27 @@ import { RotateCcw, Camera, Upload, Trash2, Sliders, Layers, Info } from '@lucid
     <div class="p-4 rounded-2xl border border-hairline space-y-2 bg-white">
       <div class="flex items-center justify-between bg-[#171717]/5 dark:bg-white/5 p-3 rounded-xl border border-[#171717]/10 dark:border-white/10">
         <div class="flex items-center gap-2">
-          <Camera class="h-4.5 w-4.5 text-ink" />
+          <Camera class="h-[18px] w-[18px] text-ink" />
           <div class="flex flex-col">
             <span class="text-sm font-bold text-ink">Webcam</span>
             <span class="text-xs text-mute uppercase">Live tracking</span>
           </div>
         </div>
-        <button id="toggle-camera" class="relative inline-flex h-6 w-12 shrink-0 cursor-pointer rounded-full bg-neutral-300 dark:bg-white/20 transition-all">
-          <span id="toggle-camera-dot" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white dark:bg-[#171717] shadow translate-x-0.5 mt-0.5"></span>
+        <button id="toggle-camera" role="switch" aria-checked="false" class="flex items-center justify-between p-2.5 rounded-xl border border-[#ebebeb] hover:border-[#171717] transition-all w-28">
+          <span class="text-xs font-semibold text-ink">Camera</span>
+          <span id="toggle-camera-label" class="text-xs font-mono text-mute">OFF</span>
         </button>
       </div>
 
       <div class="flex gap-1.5">
+        <label for="photo-upload-input" class="sr-only">Upload background image</label>
         <input type="file" id="photo-upload-input" accept="image/*" class="hidden" />
         <button id="btn-upload-photo" class="flex-1 py-2 rounded-xl flex items-center justify-center gap-1.5 text-sm font-bold bg-white dark:bg-white/5 text-[#171717] dark:text-white border border-neutral-300 dark:border-white/10 hover:bg-neutral-50 dark:hover:bg-white/10 transition-all active:scale-[0.98]">
-          <Upload class="h-4.5 w-4.5" />
+          <Upload class="h-[18px] w-[18px]" />
           Upload Background
         </button>
         <button id="btn-clear-photo" class="hidden px-4 rounded-xl text-[#171717] dark:text-white bg-white dark:bg-white/5 border border-neutral-300 dark:border-white/10 hover:bg-neutral-50 dark:hover:bg-white/10 transition-all active:scale-[0.98]">
-          <Trash2 class="h-4.5 w-4.5" />
+          <Trash2 class="h-[18px] w-[18px]" />
         </button>
       </div>
     </div>
@@ -221,8 +223,6 @@ import { RotateCcw, Camera, Upload, Trash2, Sliders, Layers, Info } from '@lucid
   const readoutBox = document.getElementById('angle-readout')?.querySelector('span');
 
   const btnReset = document.getElementById('btn-reset');
-  const btnSelectL2 = document.getElementById('btn-select-l2');
-  const btnSelectL1 = document.getElementById('btn-select-l1');
 
   // Function to reset protractor guide when dark mode toggles
   (window as any).resetProtractorGuide = () => {
@@ -238,6 +238,11 @@ import { RotateCcw, Camera, Upload, Trash2, Sliders, Layers, Info } from '@lucid
   const toggleCamera = document.getElementById('toggle-camera');
 
   const cameraVideo = document.getElementById('camera-video') as HTMLVideoElement;
+
+  function isCameraFrontMirrored() {
+    const t = cameraVideo?.style?.transform ?? '';
+    return !!(isCameraOn && t.includes('scaleX(-1)'));
+  }
   const photoBg = document.getElementById('photo-bg') as HTMLImageElement;
   const photoUploadInput = document.getElementById('photo-upload-input') as HTMLInputElement;
   const btnUploadPhoto = document.getElementById('btn-upload-photo');
@@ -363,7 +368,7 @@ import { RotateCcw, Camera, Upload, Trash2, Sliders, Layers, Info } from '@lucid
     if (hint) {
       hint.classList.remove('opacity-100');
       hint.classList.add('opacity-0');
-      setTimeout(() => {
+      window.setTimeout(() => {
         hint.style.display = 'none';
       }, 500);
     }
@@ -509,10 +514,7 @@ import { RotateCcw, Camera, Upload, Trash2, Sliders, Layers, Info } from '@lucid
     window.setTimeout(resizeCanvas, 120);
   }
 
-  // Show onboarding hint and reset workspace after layout stabilizes
-  window.setTimeout(() => {
-    resetWorkspaceOnLoad();
-  }, 500);
+  // Centering handled on load event or layout stabilizing
 
   function resizeCanvas() {
     if (!svgOverlay) return;
@@ -545,12 +547,12 @@ import { RotateCcw, Camera, Upload, Trash2, Sliders, Layers, Info } from '@lucid
   }
 
   vertexHandleGroup?.addEventListener('mousedown', (e) => { if (isCenterLocked) return; e.preventDefault(); e.stopPropagation(); cachedSvgRect = svgOverlay?.getBoundingClientRect() || null; activeHandle = 'V'; if (hintVisible && placedPointsCount === 3) hideHint(); });
-  handleAGroup?.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); cachedSvgRect = svgOverlay?.getBoundingClientRect() || null; activeHandle = 'A'; activeLine = 2; updateSelectionBorder(); if (hintVisible && placedPointsCount === 3) hideHint(); });
-  handleBGroup?.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); cachedSvgRect = svgOverlay?.getBoundingClientRect() || null; activeHandle = 'B'; activeLine = 1; updateSelectionBorder(); if (hintVisible && placedPointsCount === 3) hideHint(); });
+  handleAGroup?.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); cachedSvgRect = svgOverlay?.getBoundingClientRect() || null; activeHandle = 'A'; activeLine = 2; if (hintVisible && placedPointsCount === 3) hideHint(); });
+  handleBGroup?.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); cachedSvgRect = svgOverlay?.getBoundingClientRect() || null; activeHandle = 'B'; activeLine = 1; if (hintVisible && placedPointsCount === 3) hideHint(); });
 
   vertexHandleGroup?.addEventListener('touchstart', (e) => { if (isCenterLocked) return; e.preventDefault(); e.stopPropagation(); cachedSvgRect = svgOverlay?.getBoundingClientRect() || null; activeHandle = 'V'; if (hintVisible && placedPointsCount === 3) hideHint(); }, { passive: false });
-  handleAGroup?.addEventListener('touchstart', (e) => { e.preventDefault(); e.stopPropagation(); cachedSvgRect = svgOverlay?.getBoundingClientRect() || null; activeHandle = 'A'; activeLine = 2; updateSelectionBorder(); if (hintVisible && placedPointsCount === 3) hideHint(); }, { passive: false });
-  handleBGroup?.addEventListener('touchstart', (e) => { e.preventDefault(); e.stopPropagation(); cachedSvgRect = svgOverlay?.getBoundingClientRect() || null; activeHandle = 'B'; activeLine = 1; updateSelectionBorder(); if (hintVisible && placedPointsCount === 3) hideHint(); }, { passive: false });
+  handleAGroup?.addEventListener('touchstart', (e) => { e.preventDefault(); e.stopPropagation(); cachedSvgRect = svgOverlay?.getBoundingClientRect() || null; activeHandle = 'A'; activeLine = 2; if (hintVisible && placedPointsCount === 3) hideHint(); }, { passive: false });
+  handleBGroup?.addEventListener('touchstart', (e) => { e.preventDefault(); e.stopPropagation(); cachedSvgRect = svgOverlay?.getBoundingClientRect() || null; activeHandle = 'B'; activeLine = 1; if (hintVisible && placedPointsCount === 3) hideHint(); }, { passive: false });
 
   window.addEventListener('mousemove', (e) => { if (!activeHandle) return; dragTo(getMousePos(e)); });
   window.addEventListener('touchmove', (e) => { if (!activeHandle || !e.touches[0]) return; dragTo(getMousePos(e)); }, { passive: false });
@@ -659,32 +661,6 @@ import { RotateCcw, Camera, Upload, Trash2, Sliders, Layers, Info } from '@lucid
     updateOverlay();
   });
 
-  function updateSelectionBorder() {
-    if (activeLine === 2) {
-      if (btnSelectL2) {
-        btnSelectL2.classList.add('bg-[#171717]', 'text-white', 'border-[#171717]');
-        btnSelectL2.classList.remove('bg-white', 'text-[#171717]', 'border-[#ebebeb]');
-        btnSelectL2.textContent = "L2 ACTIVE";
-      }
-      if (btnSelectL1) {
-        btnSelectL1.classList.remove('bg-[#171717]', 'text-white', 'border-[#171717]');
-        btnSelectL1.classList.add('bg-white', 'text-[#171717]', 'border-[#ebebeb]');
-        btnSelectL1.textContent = "L1 SELECT";
-      }
-    } else {
-      if (btnSelectL1) {
-        btnSelectL1.classList.add('bg-[#171717]', 'text-white', 'border-[#171717]');
-        btnSelectL1.classList.remove('bg-white', 'text-[#171717]', 'border-[#ebebeb]');
-        btnSelectL1.textContent = "L1 ACTIVE";
-      }
-      if (btnSelectL2) {
-        btnSelectL2.classList.remove('bg-[#171717]', 'text-white', 'border-[#171717]');
-        btnSelectL2.classList.add('bg-white', 'text-[#171717]', 'border-[#ebebeb]');
-        btnSelectL2.textContent = "L2 SELECT";
-      }
-    }
-  }
-
   const snapButtons = document.querySelectorAll('[data-snap]');
   snapButtons.forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -710,40 +686,66 @@ import { RotateCcw, Camera, Upload, Trash2, Sliders, Layers, Info } from '@lucid
       const rect = svgOverlay.getBoundingClientRect();
       if (rect.width > 0) {
         ptV = { x: rect.width / 2, y: rect.height / 2 };
+      } else {
+        ptV = { x: 200, y: 200 };
       }
     }
     
-    // Check if background photo is active (i.e., photoBg has a source and is not hidden)
-    const isPhotoActive = photoBg && photoBg.src !== '' && !photoBg.classList.contains('hidden');
-    
-    if (isPhotoActive) {
-      // Keep background, clear placed points to let them place again
-      placedPointsCount = 0;
-    } else {
-      // Default center layout with 3 points
-      placedPointsCount = 3;
-      
-      // Clear photo background if not active
-      if (photoBg) {
-        photoBg.src = '';
-        photoBg.classList.add('hidden');
-      }
-      if (btnClearPhoto) {
-        btnClearPhoto.classList.add('hidden');
-      }
+    // Clear background photo and reset file input
+    if (photoBg) {
+      photoBg.src = '';
+      photoBg.classList.add('hidden');
     }
-    
-    // Turn off camera if running and we are doing a full reset
-    if (isCameraOn && !isPhotoActive) {
+    if (btnClearPhoto) {
+      btnClearPhoto.classList.add('hidden');
+    }
+    if (photoUploadInput) {
+      photoUploadInput.value = '';
+    }
+
+    // Default center layout with 3 points placed
+    placedPointsCount = 3;
+
+    // Reset settings
+    isReflex = false;
+    isRadians = false;
+    isCenterLocked = true;
+    snapStep = 1.0;
+
+    // Reset toggles UI state
+    updateToggleState(toggleReflex, 'toggle-reflex-label', false);
+    updateToggleState(toggleRadians, 'toggle-radians-label', false);
+    updateToggleState(toggleLockCenter, 'toggle-lock-center-label', true);
+
+    // Stop camera and reset camera UI
+    if (isCameraOn) {
       stopCamera();
-      const dot = document.getElementById('toggle-camera-dot');
       if (toggleCamera) {
-        toggleCamera.classList.remove('bg-[#171717]');
-        dot?.classList.remove('translate-x-5');
+        toggleCamera.classList.remove('border-[#171717]', 'bg-[#171717]/5');
+        toggleCamera.classList.add('border-[#ebebeb]');
       }
+      if (toggleCameraLabel) {
+        toggleCameraLabel.textContent = "OFF";
+        toggleCameraLabel.classList.remove('text-[#171717]', 'font-bold');
+        toggleCameraLabel.classList.add('text-mute');
+      }
+      toggleCamera?.setAttribute('aria-checked', 'false');
       isCameraOn = false;
     }
-    
+
+    // Reset snap buttons UI state
+    const snapButtons = document.querySelectorAll('[data-snap]');
+    snapButtons.forEach(btn => {
+      const target = btn as HTMLButtonElement;
+      if (target.dataset.snap === '1') {
+        target.classList.remove('bg-white', 'text-[#171717]', 'border-[#ebebeb]');
+        target.classList.add('bg-[#171717]', 'text-white', 'border-[#171717]');
+      } else {
+        target.classList.remove('bg-[#171717]', 'text-white', 'border-[#171717]');
+        target.classList.add('bg-white', 'text-[#171717]', 'border-[#ebebeb]');
+      }
+    });
+
     updateOverlay();
     showPlacementHint();
   }
@@ -752,12 +754,34 @@ import { RotateCcw, Camera, Upload, Trash2, Sliders, Layers, Info } from '@lucid
     resetWorkspaceOnLoad();
   });
 
+  // Automatically reset workspace on page load or refresh
+  function initWorkspace() {
+    resetWorkspaceOnLoad();
+    // Re-check/center after a short delay to ensure correct rect size if rendering was slow
+    window.setTimeout(() => {
+      if (svgOverlay) {
+        const rect = svgOverlay.getBoundingClientRect();
+        if (rect.width > 0 && (ptV.x === 200 && ptV.y === 200 || ptV.x === 0)) {
+          ptV = { x: rect.width / 2, y: rect.height / 2 };
+          updateOverlay();
+        }
+      }
+    }, 150);
+  }
+
+  if (document.readyState === 'complete') {
+    initWorkspace();
+  } else {
+    window.addEventListener('load', initWorkspace);
+  }
+
   function updateToggleState(element: HTMLElement | null, labelId: string, active: boolean) {
     if (!element) return;
     const label = document.getElementById(labelId);
     if (active) {
       element.classList.add('border-[#171717]', 'bg-[#171717]/5');
       element.classList.remove('border-[#ebebeb]');
+      element.setAttribute('aria-checked', 'true');
       if (label) {
         label.textContent = "ON";
         label.classList.add('text-[#171717]', 'font-bold');
@@ -766,6 +790,7 @@ import { RotateCcw, Camera, Upload, Trash2, Sliders, Layers, Info } from '@lucid
     } else {
       element.classList.remove('border-[#171717]', 'bg-[#171717]/5');
       element.classList.add('border-[#ebebeb]');
+      element.setAttribute('aria-checked', 'false');
       if (label) {
         label.textContent = "OFF";
         label.classList.remove('text-[#171717]', 'font-bold');
@@ -775,39 +800,75 @@ import { RotateCcw, Camera, Upload, Trash2, Sliders, Layers, Info } from '@lucid
   }
 
   // Camera stream
+  const toggleCameraLabel = document.getElementById('toggle-camera-label');
   toggleCamera?.addEventListener('click', async () => {
     isCameraOn = !isCameraOn;
-    const dot = document.getElementById('toggle-camera-dot');
     if (isCameraOn) {
-      toggleCamera.classList.add('bg-[#171717]');
-      dot?.classList.add('translate-x-5');
+      toggleCamera.classList.add('border-[#171717]', 'bg-[#171717]/5');
+      toggleCamera.classList.remove('border-[#ebebeb]');
+      if (toggleCameraLabel) {
+        toggleCameraLabel.textContent = "ON";
+        toggleCameraLabel.classList.add('text-[#171717]', 'font-bold');
+        toggleCameraLabel.classList.remove('text-mute');
+      }
+      toggleCamera.setAttribute('aria-checked', 'true');
       try {
         cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-        cameraVideo.srcObject = cameraStream;
-        cameraVideo.onloadedmetadata = () => {
-          const track = cameraStream?.getVideoTracks()[0];
-          if (track) {
-            const settings = track.getSettings();
-            const label = track.label?.toLowerCase() || '';
-            const isFront = settings.facingMode === 'user' || label.includes('front') || label.includes('selfie') || label.includes('user');
-            if (isFront) {
-              cameraVideo.style.transform = 'scaleX(-1)';
-            } else {
-              cameraVideo.style.transform = 'none';
+        cameraVideo && (cameraVideo.srcObject = cameraStream);
+          cameraVideo.onloadedmetadata = () => {
+            const track = cameraStream?.getVideoTracks()[0];
+            if (track) {
+              const settings = track.getSettings();
+              const label = track.label?.toLowerCase() || '';
+              const isFront =
+                settings.facingMode === 'user' ||
+                label.includes('front') ||
+                label.includes('selfie') ||
+                label.includes('user');
+
+              // Fix "tilted" front-camera view by compensating for screen orientation.
+              // screen.orientation.angle is usually one of: 0, 90, 180, 270.
+              const orientationAngle: number =
+                (typeof window !== 'undefined' &&
+                (window as any).screen?.orientation?.angle !== undefined)
+                  ? Number((window as any).screen.orientation.angle)
+                  : 0;
+
+              // Re-cast the element locally to avoid TS typing issues.
+              const vidEl = document.getElementById('camera-video') as HTMLVideoElement | null;
+              if (vidEl) {
+                vidEl.style.transformOrigin = 'center center';
+                if (isFront) {
+                  vidEl.style.transform = `scaleX(-1) rotate(${orientationAngle}deg)`;
+                } else {
+                  vidEl.style.transform = `rotate(${orientationAngle}deg)`;
+                }
+              }
             }
-          }
-          requestRender();
-        };
-        cameraVideo.classList.remove('hidden');
+            requestRender();
+          };
+        cameraVideo?.classList.remove('hidden');
         photoBg.classList.add('hidden');
       } catch (err) {
         isCameraOn = false;
-        toggleCamera.classList.remove('bg-[#171717]');
-        dot?.classList.remove('translate-x-5');
+        toggleCamera.classList.remove('border-[#171717]', 'bg-[#171717]/5');
+        toggleCamera.classList.add('border-[#ebebeb]');
+        if (toggleCameraLabel) {
+          toggleCameraLabel.textContent = "OFF";
+          toggleCameraLabel.classList.remove('text-[#171717]', 'font-bold');
+          toggleCameraLabel.classList.add('text-mute');
+        }
+        toggleCamera.setAttribute('aria-checked', 'false');
       }
     } else {
-      toggleCamera.classList.remove('bg-[#171717]');
-      dot?.classList.remove('translate-x-5');
+      toggleCamera.classList.remove('border-[#171717]', 'bg-[#171717]/5');
+      toggleCamera.classList.add('border-[#ebebeb]');
+      if (toggleCameraLabel) {
+        toggleCameraLabel.textContent = "OFF";
+        toggleCameraLabel.classList.remove('text-[#171717]', 'font-bold');
+        toggleCameraLabel.classList.add('text-mute');
+      }
+      toggleCamera.setAttribute('aria-checked', 'false');
       stopCamera();
     }
   });
@@ -817,9 +878,11 @@ import { RotateCcw, Camera, Upload, Trash2, Sliders, Layers, Info } from '@lucid
       cameraStream.getTracks().forEach(track => track.stop());
       cameraStream = null;
     }
-    cameraVideo.srcObject = null;
-    cameraVideo.style.transform = 'none';
-    cameraVideo.classList.add('hidden');
+    if (cameraVideo) {
+      cameraVideo.srcObject = null;
+      cameraVideo.style.transform = 'none';
+      cameraVideo.classList.add('hidden');
+    }
   }
 
   btnUploadPhoto?.addEventListener('click', () => photoUploadInput.click());
@@ -996,15 +1059,22 @@ import { RotateCcw, Camera, Upload, Trash2, Sliders, Layers, Info } from '@lucid
 
     // Arc Sector - scale with radius
     if (sweptSector && showA) {
+      const isMirrored = isCameraFrontMirrored();
       const rArc = Math.min(40, radius * 0.2);
-      const radA = angleA * DEG2RAD, radB = angleB * DEG2RAD;
+      const radA = angleA * DEG2RAD;
+      const radB = angleB * DEG2RAD;
+
       const sax2 = renderX(ptV.x + rArc * Math.cos(radA));
       const say2 = ptV.y - rArc * Math.sin(radA);
       const sbx2 = renderX(ptV.x + rArc * Math.cos(radB));
       const sby2 = ptV.y - rArc * Math.sin(radB);
+
       const largeArc = finalAngle > 180 ? 1 : 0;
       const sweepFlag = (isReflex ? 1 : 0) ^ (isMirrored ? 1 : 0);
-      sweptSector.setAttribute('d', `M ${vx} ${vy} L ${String(sax2)} ${say2} A ${rArc} ${rArc} 0 ${largeArc} ${sweepFlag} ${String(sbx2)} ${sby2} Z`);
+      sweptSector.setAttribute(
+        'd',
+        `M ${vx} ${vy} L ${String(sax2)} ${say2} A ${rArc} ${rArc} 0 ${largeArc} ${sweepFlag} ${String(sbx2)} ${sby2} Z`
+      );
     }
 
     // Floating Readout — use cached refs
@@ -1097,5 +1167,20 @@ import { RotateCcw, Camera, Upload, Trash2, Sliders, Layers, Info } from '@lucid
     #mobile-rotation-note {
       display: block;
     }
+  }
+
+  /* Scoped subtle hover effects for action buttons to avoid solid fills */
+  #btn-reset:hover,
+  #btn-decrement:hover,
+  #btn-increment:hover {
+    background-color: rgba(23, 23, 23, 0.05) !important;
+    border-color: rgba(23, 23, 23, 0.15) !important;
+  }
+  
+  :global(.dark) #btn-reset:hover,
+  :global(.dark) #btn-decrement:hover,
+  :global(.dark) #btn-increment:hover {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
   }
 </style>

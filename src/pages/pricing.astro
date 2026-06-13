@@ -4,6 +4,7 @@ import { Check, Info } from '@lucide/astro';
 
 const pageTitle = "Pricing | Free Online Angle Finder";
 const pageDescription = "Online Angle Finder is 100% free and ad-free. Compare our Free and Mock Pro tiers to see the Vercel-style pricing design.";
+const pageKeywords = "free online angle finder, ad-free protractor tool, free geometry utilities, no-cost angle measurement";
 
 const freeFeatures = [
   "Upload unlimited images",
@@ -24,7 +25,12 @@ const proFeatures = [
 ];
 ---
 
-<Layout title={pageTitle} description={pageDescription}>
+<Layout 
+  title={pageTitle} 
+  description={pageDescription} 
+  keywords={pageKeywords}
+  image="https://anglefinderonline.com/og-image.png"
+>
   <section class="py-16 md:py-24 bg-canvas-soft">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center mb-16">
       <span class="font-mono text-xs font-semibold uppercase tracking-wider text-link bg-link-bg-soft px-3 py-1 rounded-full">
