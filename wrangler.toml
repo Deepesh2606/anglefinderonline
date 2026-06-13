@@ -1,0 +1,10 @@
+name = "intergalactic-iron"
+compatibility_date = "2026-04-15"
+
+[[kv_namespaces]]
+binding = "SESSION"
+id = "e6dedbc33d2849c18e48ebe38530e70e"
+
+[[kv_namespaces]]
+binding = "SUGGESTIONS"
+id = "c306e36388714920aed1ea8eb0fc798b"
