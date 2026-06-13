@@ -270,6 +270,27 @@ html {
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
 }
 
+/* Force visibility for Homepage buttons and text in light mode */
+:root:not(.dark) .border-neutral-900 {
+  border-color: #171717 !important;
+}
+
+:root:not(.dark) .text-neutral-900 {
+  color: #171717 !important;
+}
+
+:root:not(.dark) .text-\[\#888888\] {
+  color: #171717 !important;
+}
+
+:root:not(.dark) .border-\[\#171717\] {
+  border-color: #171717 !important;
+}
+
+:root:not(.dark) .text-\[\#171717\] {
+  color: #171717 !important;
+}
+
 .shadow-vercel-2 {
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.05);
 }
