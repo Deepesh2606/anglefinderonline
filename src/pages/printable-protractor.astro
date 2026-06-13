@@ -1,0 +1,445 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Printer, ArrowLeft } from '@lucide/astro';
+
+const pageTitle = "Free Printable Protractor (PDF & SVG) | 100% Actual Scale";
+const pageDescription = "Download and print a free, high-resolution vector protractor template. Fits standard A4 or Letter size paper at exactly 100% actual scale. Perfect for school math homework and geometry.";
+
+// Pre-calculate vector ticks and labels for the SVG protractor
+const ticks = [];
+const rOuter = 220; // Outer radius of the scale
+const center = { x: 250, y: 240 }; // Adjusted center to fit SVG viewport nicely
+
+for (let i = 0; i <= 180; i++) {
+  let length = 6;
+  let isMajor = false;
+  let isMedium = false;
+
+  if (i % 10 === 0) {
+    length = 20;
+    isMajor = true;
+  } else if (i % 5 === 0) {
+    length = 12;
+    isMedium = true;
+  }
+
+  const rad = (i * Math.PI) / 180;
+  const cos = Math.cos(rad);
+  const sin = Math.sin(rad);
+
+  const x1 = center.x + rOuter * cos;
+  const y1 = center.y - rOuter * sin;
+  const x2 = center.x + (rOuter - length) * cos;
+  const y2 = center.y - (rOuter - length) * sin;
+
+  // Text label coordinates (placed slightly further inward)
+  let textX1 = null;
+  let textY1 = null;
+  let textX2 = null;
+  let textY2 = null;
+  let textAngle = 0;
+
+  if (isMajor && i > 0 && i < 180) {
+    // Upper label (left-to-right: 0 to 180)
+    textX1 = center.x + (rOuter - 35) * cos;
+    textY1 = center.y - (rOuter - 35) * sin;
+    
+    // Lower label (right-to-left: 180 to 0)
+    textX2 = center.x + (rOuter - 48) * cos;
+    textY2 = center.y - (rOuter - 48) * sin;
+
+    // Angle to rotate text so it's readable along the arc
+    textAngle = 90 - i;
+  }
+
+  ticks.push({
+    angle: i,
+    x1, y1, x2, y2,
+    isMajor,
+    isMedium,
+    textX1, textY1,
+    textX2, textY2,
+    textAngle,
+    val1: i,
+    val2: 180 - i
+  });
+}
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <!-- Main layout container: hidden when printing, except for .printable-area -->
+  <div class="py-12 md:py-16 bg-canvas-soft min-h-screen no-print">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6">
+      
+      <!-- Back button and Navigation -->
+      <div class="mb-6 flex justify-between items-center">
+        <a
+          href="/"
+          class="inline-flex items-center gap-2 text-sm font-medium text-mute hover:text-ink transition-colors"
+        >
+          <ArrowLeft class="h-4 w-4" />
+          <span>Back to Online Tool</span>
+        </a>
+      </div>
+
+      <!-- Header -->
+      <div class="text-left mb-10 border-b border-hairline pb-8">
+        <h1 class="font-sans text-3xl sm:text-4xl font-black tracking-tight text-ink">
+          Free Printable Protractor Template
+        </h1>
+        <p class="mt-3 font-sans text-base text-body max-w-2xl leading-relaxed">
+          Need a physical protractor right away? We've designed a precision 180-degree vector protractor template. You can print it directly from your browser at exactly 100% scale.
+        </p>
+      </div>
+
+      <!-- Main Columns Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left Side: Interactive Preview & Print Trigger -->
+        <div class="lg:col-span-7 bg-white border border-hairline rounded-2xl p-6 sm:p-8 shadow-vercel-3 flex flex-col items-center">
+          
+          <div class="w-full flex items-center justify-between mb-6">
+            <span class="font-mono text-xs font-semibold text-mute uppercase tracking-wider">
+              180° Semicircle Template
+            </span>
+            <button
+              onclick="window.print()"
+              class="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-link hover:bg-link-deep text-white px-5 font-sans text-xs sm:text-sm font-semibold shadow-sm transition-all duration-200 cursor-pointer"
+            >
+              <Printer class="h-4 w-4" />
+              <span>Print Protractor Now</span>
+            </button>
+          </div>
+
+          <!-- Protractor SVG Display Container -->
+          <div class="border border-hairline rounded-xl bg-canvas-soft p-4 w-full flex justify-center items-center shadow-inner relative overflow-hidden">
+            <!-- Grid Lines for scale check -->
+            <div class="absolute inset-0 pointer-events-none opacity-5 flex flex-col justify-between p-2">
+              <div class="h-px bg-neutral-900 w-full"></div>
+              <div class="h-px bg-neutral-900 w-full"></div>
+              <div class="h-px bg-neutral-900 w-full"></div>
+              <div class="h-px bg-neutral-900 w-full"></div>
+            </div>
+            
+            <div class="w-full max-w-[480px]">
+              <!-- We include the print ID to isolate this for printing -->
+              <svg 
+                id="printable-protractor-svg" 
+                viewBox="0 0 500 280" 
+                class="protractor-print-svg w-full h-auto drop-shadow-md select-none text-neutral-800 dark:text-neutral-200 transition-colors"
+                fill="none" 
+                stroke="currentColor"
+              >
+                <!-- Double outer arc rings -->
+                <path d="M 30 240 A 220 220 0 0 1 470 240" stroke-width="1.5" />
+                <path d="M 35 240 A 215 215 0 0 1 465 240" stroke-width="0.75" />
+                <path d="M 40 240 A 210 210 0 0 1 460 240" stroke-width="0.5" />
+                
+                <!-- Inner arc lines around labels -->
+                <path d="M 65 240 A 185 185 0 0 1 435 240" stroke-width="0.5" stroke-dasharray="3,3" class="opacity-50" />
+                <path d="M 80 240 A 170 170 0 0 1 420 240" stroke-width="1" />
+                <path d="M 92 240 A 158 158 0 0 1 408 240" stroke-width="0.75" />
+                
+                <!-- Base Baseline -->
+                <line x1="20" y1="240" x2="480" y2="240" stroke-width="2" />
+                
+                <!-- Center Hole Semicircle -->
+                <path d="M 215 240 A 35 35 0 0 1 285 240 Z" stroke-width="1" />
+                
+                <!-- Center Pointer Crosshairs -->
+                <line x1="250" y1="230" x2="250" y2="240" stroke-width="1" />
+                <line x1="240" y1="240" x2="260" y2="240" stroke-width="1" />
+                <circle cx="250" cy="240" r="1.5" fill="currentColor" />
+                
+                <!-- Renders the 181 tick lines programmatically -->
+                {ticks.map((tick) => (
+                  <line 
+                    x1={tick.x1} 
+                    y1={tick.y1} 
+                    x2={tick.x2} 
+                    y2={tick.y2} 
+                    stroke-width={tick.isMajor ? 1.25 : (tick.isMedium ? 0.75 : 0.4)} 
+                  />
+                ))}
+
+                <!-- Draw degree numbers -->
+                {ticks.map((tick) => (
+                  tick.textX1 && (
+                    <g transform={`rotate(${tick.textAngle}, ${tick.textX1}, ${tick.textY1})`}>
+                      <text
+                        x={tick.textX1}
+                        y={tick.textY1}
+                        font-size="7.5"
+                        font-family="monospace"
+                        font-weight="bold"
+                        fill="currentColor"
+                        text-anchor="middle"
+                        dominant-baseline="middle"
+                        stroke="none"
+                      >
+                        {tick.val2}
+                      </text>
+                    </g>
+                  )
+                ))}
+                
+                {ticks.map((tick) => (
+                  tick.textX2 && (
+                    <g transform={`rotate(${tick.textAngle}, ${tick.textX2}, ${tick.textY2})`}>
+                      <text
+                        x={tick.textX2}
+                        y={tick.textY2}
+                        font-size="6.5"
+                        font-family="monospace"
+                        fill="currentColor"
+                        text-anchor="middle"
+                        dominant-baseline="middle"
+                        stroke="none"
+                        class="opacity-75"
+                      >
+                        {tick.val1}
+                      </text>
+                    </g>
+                  )
+                ))}
+
+                <!-- Scale Verification Box (Critical for 100% scale validation) -->
+                <g stroke-width="0.5" class="opacity-80">
+                  <!-- 2cm ruler guide for user check -->
+                  <rect x="190" y="165" width="120" height="20" rx="2" stroke-dasharray="2,2" />
+                  <text x="250" y="173" font-size="5" font-family="monospace" fill="currentColor" text-anchor="middle" stroke="none">SCALE VERIFICATION</text>
+                  <!-- 5cm marks inside the box -->
+                  <line x1="200" y1="180" x2="200" y2="185" stroke-width="0.75" />
+                  <line x1="300" y1="180" x2="300" y2="185" stroke-width="0.75" />
+                  <line x1="250" y1="181" x2="250" y2="184" stroke-width="0.5" />
+                  <text x="250" y="179" font-size="4" font-family="monospace" fill="currentColor" text-anchor="middle" stroke="none">5 cm (2 in)</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side: Print instructions & details -->
+        <div class="lg:col-span-5 flex flex-col gap-6">
+          
+          <!-- Instructions Panel -->
+          <div class="bg-white border border-hairline rounded-2xl p-6 shadow-vercel-1">
+            <h3 class="font-sans text-base font-bold text-ink mb-3">
+              🖨️ How to Print at 100% Actual Scale
+            </h3>
+            <p class="font-sans text-xs sm:text-sm text-body leading-relaxed mb-4">
+              To ensure the printed protractor is accurate, you must adjust your printer settings before submitting:
+            </p>
+            <ul class="font-sans text-xs sm:text-sm text-body space-y-3 pl-1">
+              <li class="flex gap-2.5 items-start">
+                <span class="text-link font-bold select-none">1.</span>
+                <span>Click the <strong>Print Protractor</strong> button. This opens your browser's print preview window.</span>
+              </li>
+              <li class="flex gap-2.5 items-start">
+                <span class="text-link font-bold select-none">2.</span>
+                <span>In the printer options, look for <strong>Scale</strong> or <strong>Page Sizing</strong>.</span>
+              </li>
+              <li class="flex gap-2.5 items-start">
+                <span class="text-link font-bold select-none">3.</span>
+                <span>Select <strong>Actual Size</strong> or set the scale value to exactly <strong>100%</strong>. (Do not use "Fit to Page", "Shrink to Fit", or "Stretch").</span>
+              </li>
+              <li class="flex gap-2.5 items-start">
+                <span class="text-link font-bold select-none">4.</span>
+                <span>Set orientation to <strong>Landscape</strong> and choose paper size (Letter or A4).</span>
+              </li>
+              <li class="flex gap-2.5 items-start">
+                <span class="text-link font-bold select-none">5.</span>
+                <span>After printing, lay a physical ruler over the <strong>Scale Verification</strong> box on the template. It should measure exactly 5 cm (or 2 inches).</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Printable FAQ -->
+          <div class="bg-white border border-hairline rounded-2xl p-6 shadow-vercel-1">
+            <h3 class="font-sans text-base font-bold text-ink mb-3">
+              Frequently Asked Questions
+            </h3>
+            <div class="space-y-4">
+              <div>
+                <h4 class="font-sans text-xs sm:text-sm font-semibold text-ink">What is a printable protractor?</h4>
+                <p class="font-sans text-xs text-body leading-relaxed mt-1">
+                  It is a digital file (SVG or PDF format) that renders a circle or semicircle angle scale. It is designed to be printed onto paper, cardboard, or clear transparency sheets to act as a physical protractor tool.
+                </p>
+              </div>
+              <div>
+                <h4 class="font-sans text-xs sm:text-sm font-semibold text-ink">Why is my printed tool slightly off?</h4>
+                <p class="font-sans text-xs text-body leading-relaxed mt-1">
+                  Browsers often apply default margins and scale pages down to fit the printable margins. Always confirm that the "Scale" is set to "100%" or "Actual Size" in your browser's print options.
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Print-only block: Only rendered by printer, hides headers, margins, buttons -->
+  <div class="print-only-container">
+    <div class="printable-area-wrapper">
+      <svg 
+        viewBox="0 0 500 280" 
+        class="protractor-print-svg print-only-svg"
+        fill="none" 
+        stroke="black"
+      >
+        <!-- Double outer arc rings -->
+        <path d="M 30 240 A 220 220 0 0 1 470 240" stroke-width="1.5" />
+        <path d="M 35 240 A 215 215 0 0 1 465 240" stroke-width="0.75" />
+        <path d="M 40 240 A 210 210 0 0 1 460 240" stroke-width="0.5" />
+        
+        <!-- Inner arc lines around labels -->
+        <path d="M 65 240 A 185 185 0 0 1 435 240" stroke-width="0.5" stroke-dasharray="3,3" />
+        <path d="M 80 240 A 170 170 0 0 1 420 240" stroke-width="1" />
+        <path d="M 92 240 A 158 158 0 0 1 408 240" stroke-width="0.75" />
+        
+        <!-- Base Baseline -->
+        <line x1="20" y1="240" x2="480" y2="240" stroke-width="2" />
+        
+        <!-- Center Hole Semicircle -->
+        <path d="M 215 240 A 35 35 0 0 1 285 240 Z" stroke-width="1" />
+        
+        <!-- Center Pointer Crosshairs -->
+        <line x1="250" y1="230" x2="250" y2="240" stroke-width="1" />
+        <line x1="240" y1="240" x2="260" y2="240" stroke-width="1" />
+        <circle cx="250" cy="240" r="1.5" fill="black" />
+        
+        <!-- Renders the 181 tick lines -->
+        {ticks.map((tick) => (
+          <line 
+            x1={tick.x1} 
+            y1={tick.y1} 
+            x2={tick.x2} 
+            y2={tick.y2} 
+            stroke-width={tick.isMajor ? 1.25 : (tick.isMedium ? 0.75 : 0.4)} 
+          />
+        ))}
+
+        <!-- Draw degree numbers -->
+        {ticks.map((tick) => (
+          tick.textX1 && (
+            <g transform={`rotate(${tick.textAngle}, ${tick.textX1}, ${tick.textY1})`}>
+              <text
+                x={tick.textX1}
+                y={tick.textY1}
+                font-size="7.5"
+                font-family="monospace"
+                font-weight="bold"
+                fill="black"
+                text-anchor="middle"
+                dominant-baseline="middle"
+                stroke="none"
+              >
+                {tick.val2}
+              </text>
+            </g>
+          )
+        ))}
+        
+        {ticks.map((tick) => (
+          tick.textX2 && (
+            <g transform={`rotate(${tick.textAngle}, ${tick.textX2}, ${tick.textY2})`}>
+              <text
+                x={tick.textX2}
+                y={tick.textY2}
+                font-size="6.5"
+                font-family="monospace"
+                fill="black"
+                text-anchor="middle"
+                dominant-baseline="middle"
+                stroke="none"
+              >
+                {tick.val1}
+              </text>
+            </g>
+          )
+        ))}
+
+        <!-- Scale Verification Box (Critical for 100% scale validation) -->
+        <g stroke-width="0.5">
+          <rect x="190" y="165" width="120" height="20" rx="2" stroke-dasharray="2,2" />
+          <text x="250" y="173" font-size="5" font-family="monospace" fill="black" text-anchor="middle" stroke="none">SCALE VERIFICATION</text>
+          <!-- 5cm marks inside the box -->
+          <line x1="200" y1="180" x2="200" y2="185" stroke-width="0.75" />
+          <line x1="300" y1="180" x2="300" y2="185" stroke-width="0.75" />
+          <line x1="250" y1="181" x2="250" y2="184" stroke-width="0.5" />
+          <text x="250" y="179" font-size="4" font-family="monospace" fill="black" text-anchor="middle" stroke="none">5 cm (2 in)</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</Layout>
+
+<style is:global>
+  /* Global CSS for printable protractor */
+  
+  /* Container hidden on screen, only visible during print */
+  .print-only-container {
+    display: none;
+  }
+
+  @media print {
+    /* Hide everything on screen */
+    .no-print,
+    header,
+    footer,
+    nav,
+    aside,
+    button,
+    a,
+    div:not(.print-only-container):not(.printable-area-wrapper) {
+      display: none !important;
+    }
+
+    body, html {
+      background-color: #ffffff !important;
+      color: #000000 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      overflow: visible !important;
+    }
+
+    .print-only-container {
+      display: flex !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      justify-content: center !important;
+      align-items: center !important;
+      background: white !important;
+    }
+
+    .printable-area-wrapper {
+      width: 20cm !important;
+      height: 14cm !important;
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+    }
+
+    .print-only-svg {
+      width: 19cm !important;
+      height: auto !important;
+      display: block !important;
+    }
+
+    .print-only-svg text {
+      fill: #000000 !important;
+    }
+
+    .print-only-svg path,
+    .print-only-svg line,
+    .print-only-svg circle,
+    .print-only-svg rect {
+      stroke: #000000 !important;
+    }
+  }
+</style>

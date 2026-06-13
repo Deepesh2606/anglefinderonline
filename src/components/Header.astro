@@ -1,5 +1,5 @@
-si---
-import { Camera, Image, Compass, HelpCircle, BookOpen, Sun, Moon, Menu } from '@lucide/astro';
+---
+import { Camera, Image, Compass, HelpCircle, BookOpen, Sun, Moon, Menu, Printer } from '@lucide/astro';
 
 const pathname = Astro.url.pathname;
 
@@ -8,6 +8,7 @@ const navLinks = [
   { name: 'Webcam Tool', href: '/tool/webcam', icon: Camera },
   { name: 'Roof Pitch', href: '/roof-pitch-calculator', icon: Compass },
   { name: 'Woodworking', href: '/woodworking-angle-finder', icon: Compass },
+  { name: 'Printable', href: '/printable-protractor', icon: Printer },
   { name: 'Pricing', href: '/pricing', icon: HelpCircle },
   { name: 'Blog', href: '/blog', icon: BookOpen },
 ];
