@@ -1,0 +1,100 @@
+---
+
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  keywords?: string;
+  schemaMarkup?: Record<string, any> | Record<string, any>[];
+  theme?: 'light' | 'dark';
+}
+
+const {
+  title = "Online Angle Finder | Measure Angles from Photos Free",
+  description = "A free, web-based angle measurement tool. Upload an image or use your webcam to easily find angles between two lines, roof pitches, or woodwork miters.",
+  keywords = "online angle finder, measure angle from photo online, angle measurement tool free, find angle between two lines online, measure roof pitch angle from photo, woodworking angle finder online",
+  schemaMarkup,
+  theme = 'light',
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, 'https://anglefinderonline.com');
+
+// Format schema markup to ensure it can be injected safely
+const schemaString = schemaMarkup 
+  ? JSON.stringify(schemaMarkup, null, 2) 
+  : null;
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth selection:bg-primary selection:text-white scroll-pt-20">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- SEO Meta Tags -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="keywords" content={keywords} />
+    <link rel="canonical" href={canonicalURL} />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content="https://anglefinderonline.com/og-image.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={Astro.url} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content="https://anglefinderonline.com/og-image.png" />
+
+    <!-- Google Fonts: Inter for geometric sans, JetBrains Mono for monospace -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
+
+    <!-- Schema Markup -->
+    {schemaString && (
+      <script type="application/ld+json" set:html={schemaString} />
+    )}
+    <script>
+      (function() {
+        try {
+          const storedTheme = localStorage.getItem('anglefinder-theme');
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          const shouldUseDark = storedTheme === 'dark' || (!storedTheme && prefersDark);
+          if (shouldUseDark) {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {
+          // ignore if localStorage is unavailable
+        }
+      })();
+    </script>
+
+  </head>
+  <body class="flex min-h-screen flex-col bg-canvas-soft dark:bg-[#0D1117] text-ink dark:text-slate-100 antialiased">
+
+
+
+    <!-- Header Navigation -->
+    <Header theme={theme} />
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <Footer theme={theme} />
+  </body>
+</html>

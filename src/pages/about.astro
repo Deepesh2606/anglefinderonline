@@ -1,0 +1,74 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Shield, Sparkles, Heart } from '@lucide/astro';
+
+const pageTitle = "About Us | Online Angle Finder";
+const pageDescription = "Learn about the mission behind Online Angle Finder. We provide a clean, ad-free, high-precision geometry utility tool that processes files 100% locally.";
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <section class="py-16 md:py-24 bg-canvas-soft">
+    <div class="mx-auto max-w-3xl px-4 text-center mb-12">
+      <span class="font-mono text-xs font-semibold uppercase tracking-wider text-link bg-link-bg-soft px-3 py-1 rounded-full">
+        About Us
+      </span>
+      <h1 class="mt-4 font-sans text-4xl font-semibold tracking-[-1.8px] text-ink sm:text-5xl leading-tight">
+        A clean tool for builders, designers, and students.
+      </h1>
+      <p class="mt-4 font-sans text-base text-body leading-relaxed">
+        We built Online Angle Finder to solve a simple problem: digital measuring tools shouldn't be bloated with intrusive ads, require mandatory logins, or compromise user privacy.
+      </p>
+    </div>
+
+    <!-- Core Philosophy Grid -->
+    <div class="mx-auto max-w-4xl px-4 grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+      
+      <div class="bg-white border border-hairline rounded-xl p-6 shadow-vercel-2 flex flex-col gap-3">
+        <div class="h-9 w-9 flex items-center justify-center rounded-lg bg-canvas-soft text-link shadow-vercel-1">
+          <Shield class="h-4.5 w-4.5" />
+        </div>
+        <h3 class="font-sans text-base font-semibold text-ink">Privacy first</h3>
+        <p class="font-sans text-xs text-body leading-relaxed">
+          Your photos are your property. Every line drawn and angle calculated is evaluated directly inside your browser. No files are uploaded to our servers.
+        </p>
+      </div>
+
+      <div class="bg-white border border-hairline rounded-xl p-6 shadow-vercel-2 flex flex-col gap-3">
+        <div class="h-9 w-9 flex items-center justify-center rounded-lg bg-canvas-soft text-link shadow-vercel-1">
+          <Sparkles class="h-4.5 w-4.5" />
+        </div>
+        <h3 class="font-sans text-base font-semibold text-ink">Modern Aesthetics</h3>
+        <p class="font-sans text-xs text-body leading-relaxed">
+          No outdated 2000s layouts. We built this utility with a sleek, minimalist interface inspired by developer platforms, making it a joy to use.
+        </p>
+      </div>
+
+      <div class="bg-white border border-hairline rounded-xl p-6 shadow-vercel-2 flex flex-col gap-3">
+        <div class="h-9 w-9 flex items-center justify-center rounded-lg bg-canvas-soft text-link shadow-vercel-1">
+          <Heart class="h-4.5 w-4.5" />
+        </div>
+        <h3 class="font-sans text-base font-semibold text-ink">No Hidden Cost</h3>
+        <p class="font-sans text-xs text-body leading-relaxed">
+          All image uploads, webcam measurements, complementary angle breakdowns, and PNG exports are 100% free and ad-free.
+        </p>
+      </div>
+    </div>
+
+    <!-- The Mission / Narrative -->
+    <div class="mx-auto max-w-2xl px-4 py-10 bg-white border border-hairline rounded-2xl shadow-vercel-3 text-left space-y-6">
+      <h2 class="font-sans text-xl font-semibold text-ink tracking-[-0.5px]">Why we built this:</h2>
+      
+      <p class="font-sans text-sm text-body leading-relaxed">
+        As DIYers and developers, we frequently found ourselves needing to measure angles from architectural floor plans, woodworking diagrams, and site pictures. Every Google search led to web protractors that were covered in blinking display ads, loaded slowly, and broke on mobile devices.
+      </p>
+
+      <p class="font-sans text-sm text-body leading-relaxed">
+        So we decided to engineer a better alternative. By leveraging modern browser APIs, we built a fully local-execution measurement tool with smooth draggable SVG handles and camera freeze-frame snapshot support.
+      </p>
+
+      <p class="font-sans text-sm text-body leading-relaxed">
+        We hope Online Angle Finder helps you in your carpentry workshops, roofing inspections, geometry classes, or photography sessions! If you have suggestions, feel free to drop us a line on our <a href="/contact" class="text-link hover:underline font-semibold">Contact Page</a>.
+      </p>
+    </div>
+  </section>
+</Layout>

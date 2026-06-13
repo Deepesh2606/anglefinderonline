@@ -1,0 +1,176 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Mail, MessageSquare } from '@lucide/astro';
+
+const pageTitle = "Contact Us | Online Angle Finder";
+const pageDescription = "Get in touch with the team at Online Angle Finder. Leave suggestions, report bugs, or ask clarifying geometry questions.";
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <section class="py-16 md:py-24 bg-canvas-soft">
+    <div class="mx-auto max-w-xl px-4">
+      <div class="text-center mb-10">
+        <span class="font-mono text-xs font-semibold uppercase tracking-wider text-link bg-link-bg-soft px-3 py-1 rounded-full">
+          Get in touch
+        </span>
+        <h1 class="mt-4 font-sans text-4xl font-semibold tracking-[-1.5px] text-ink leading-tight">
+          Contact our team
+        </h1>
+        <p class="mt-2 font-sans text-sm text-body">
+          Have feedback, feature requests, or questions? We'd love to hear from you.
+        </p>
+      </div>
+
+      <!-- Contact Form Card -->
+      <div class="bg-white border border-hairline rounded-2xl p-6 md:p-8 shadow-vercel-3">
+        
+        <!-- Submission Success Alert (hidden by default) -->
+        <div id="contact-success" class="hidden mb-6 rounded-lg bg-emerald-50 border border-emerald-200 p-4 text-emerald-800">
+          <div class="flex items-center gap-2">
+            <svg class="h-5 w-5 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            <span class="font-sans text-sm font-semibold">Message Sent Successfully!</span>
+          </div>
+          <p class="font-sans text-xs text-emerald-700 mt-1 leading-relaxed">
+            Thank you for reaching out. We will read your feedback and respond shortly.
+          </p>
+        </div>
+
+        <form id="contact-form" class="space-y-5">
+          <!-- Name -->
+          <div class="flex flex-col gap-1.5">
+            <label for="contact-name" class="font-sans text-xs font-semibold text-body uppercase tracking-wider">
+              Full Name
+            </label>
+            <input
+              type="text"
+              id="contact-name"
+              required
+              placeholder="E.g., John Doe"
+              class="form-input border border-hairline rounded-md h-10 px-3.5 font-sans text-sm text-ink focus:outline-none focus:border-primary shadow-vercel-1"
+            />
+          </div>
+
+          <!-- Email -->
+          <div class="flex flex-col gap-1.5">
+            <label for="contact-email" class="font-sans text-xs font-semibold text-body uppercase tracking-wider">
+              Email Address
+            </label>
+            <input
+              type="email"
+              id="contact-email"
+              required
+              placeholder="E.g., john@example.com"
+              class="form-input border border-hairline rounded-md h-10 px-3.5 font-sans text-sm text-ink focus:outline-none focus:border-primary shadow-vercel-1"
+            />
+          </div>
+
+          <!-- Inquiry Category -->
+          <div class="flex flex-col gap-1.5">
+            <label for="contact-category" class="font-sans text-xs font-semibold text-body uppercase tracking-wider">
+              Topic
+            </label>
+            <select
+              id="contact-category"
+              class="form-input border border-hairline rounded-md h-10 px-2.5 font-sans text-sm text-body focus:outline-none focus:border-primary bg-white shadow-vercel-1"
+            >
+              <option value="feedback">General Feedback</option>
+              <option value="bug">Report a Bug / Issue</option>
+              <option value="feature">Feature Request</option>
+              <option value="woodworking">Woodworking / Pitch Calculator Suggestion</option>
+            </select>
+          </div>
+
+          <!-- Message -->
+          <div class="flex flex-col gap-1.5">
+            <label for="contact-message" class="font-sans text-xs font-semibold text-body uppercase tracking-wider">
+              Message
+            </label>
+            <textarea
+              id="contact-message"
+              required
+              rows="4"
+              placeholder="Tell us what you think..."
+              class="border border-hairline rounded-md p-3.5 font-sans text-sm text-ink focus:outline-none focus:border-primary shadow-vercel-1 resize-none"
+            ></textarea>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="pt-2">
+            <button
+              type="submit"
+              class="w-full inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary dark:bg-white font-sans text-sm font-semibold text-white dark:text-[#0D1117] shadow-vercel-2 hover:bg-black/90 dark:hover:bg-slate-100 transition-all duration-150"
+            >
+              <Mail class="h-4.5 w-4.5" />
+              Send Message
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Quick Support Card -->
+      <div class="mt-8 border border-hairline rounded-xl p-5 bg-white flex gap-4 shadow-vercel-1">
+        <MessageSquare class="h-5 w-5 text-link shrink-0 mt-0.5" />
+        <div class="text-left">
+          <h4 class="font-sans text-sm font-semibold text-ink">Github & Open Source</h4>
+          <p class="font-sans text-xs text-body leading-relaxed mt-0.5">
+            Online Angle Finder is built by developers, for developers. Suggest features or submit issues directly in our open repository.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const successAlert = document.getElementById('contact-success');
+
+  if (form && successAlert) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const nameInput = document.getElementById('contact-name') as HTMLInputElement;
+      const emailInput = document.getElementById('contact-email') as HTMLInputElement;
+      const categoryInput = document.getElementById('contact-category') as HTMLSelectElement;
+      const messageInput = document.getElementById('contact-message') as HTMLTextAreaElement;
+
+      const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+      const originalBtnText = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = 'Sending...';
+
+      try {
+        const response = await fetch('/api/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: nameInput?.value,
+            email: emailInput?.value,
+            category: categoryInput?.value,
+            message: messageInput?.value,
+          }),
+        });
+
+        if (response.ok) {
+          form.reset();
+          successAlert.classList.remove('hidden');
+          successAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          
+          setTimeout(() => {
+            successAlert.classList.add('hidden');
+          }, 7000);
+        } else {
+          const errData = await response.json() as { error?: string };
+          alert('Error sending suggestion: ' + (errData.error || response.statusText));
+        }
+      } catch (err) {
+        alert('Network error, please try again.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
+      }
+    });
+  }
+</script>

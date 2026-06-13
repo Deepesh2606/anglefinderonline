@@ -1,0 +1,58 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const pageTitle = "Privacy Policy | Online Angle Finder";
+const pageDescription = "Read the Privacy Policy for Online Angle Finder. We process all images and video data locally on your device; we never upload your files.";
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <section class="py-16 bg-canvas-soft">
+    <div class="mx-auto max-w-3xl px-4">
+      <div class="bg-white border border-hairline rounded-2xl p-8 md:p-12 shadow-vercel-3 text-left space-y-6">
+        <h1 class="font-sans text-3xl font-semibold tracking-[-1.28px] text-ink border-b border-hairline pb-4 leading-none">
+          Privacy Policy
+        </h1>
+        <p class="font-mono text-xs text-mute uppercase">Last updated: June 12, 2026</p>
+
+        <p class="font-sans text-sm text-body leading-relaxed">
+          At <strong class="text-ink">Online Angle Finder</strong>, we prioritize the privacy and security of our users. This policy outlines how we handle data when you utilize our online angle finder, roof pitch calculator, and woodworking tools.
+        </p>
+
+        <h2 class="font-sans text-lg font-semibold text-ink pt-2 tracking-[-0.5px]">1. Local-First Processing (Critical Privacy)</h2>
+        <p class="font-sans text-sm text-body leading-relaxed">
+          Unlike traditional web applications, our measurement engine runs entirely inside your web browser. 
+          When you upload an image or turn on webcam mode:
+        </p>
+        <ul class="list-disc pl-5 font-sans text-sm text-body space-y-1">
+          <li><strong>No Image Uploads:</strong> Your images are loaded into local memory. We never transmit your images or camera pixels to any server.</li>
+          <li><strong>No Video Storing:</strong> The live webcam mode utilizes your local camera stream; we do not capture, record, or store the feed.</li>
+        </ul>
+
+        <h2 class="font-sans text-lg font-semibold text-ink pt-2 tracking-[-0.5px]">2. Information We Collect</h2>
+        <p class="font-sans text-sm text-body leading-relaxed">
+          Since the application runs 100% client-side, we do not require registration, login credentials, or email addresses to use the core utility. 
+          We do not collect personal data except for:
+        </p>
+        <ul class="list-disc pl-5 font-sans text-sm text-body space-y-1">
+          <li>Information you voluntarily submit via our Contact Us form (name, email, message text).</li>
+          <li>Anonymous usage analytics to track page views and improve performance.</li>
+        </ul>
+
+        <h2 class="font-sans text-lg font-semibold text-ink pt-2 tracking-[-0.5px]">3. Cookies & Analytics</h2>
+        <p class="font-sans text-sm text-body leading-relaxed">
+          We may use minimal cookies to save your settings locally (such as your preferred line thickness or line color). We do not engage in behavioral cross-site advertising tracking.
+        </p>
+
+        <h2 class="font-sans text-lg font-semibold text-ink pt-2 tracking-[-0.5px]">4. Third-Party Services</h2>
+        <p class="font-sans text-sm text-body leading-relaxed">
+          If you contact us, your submission is routed through standard secure mailing channels. We do not sell or distribute your contact email addresses to marketers.
+        </p>
+
+        <h2 class="font-sans text-lg font-semibold text-ink pt-2 tracking-[-0.5px]">5. Contact Us</h2>
+        <p class="font-sans text-sm text-body leading-relaxed">
+          If you have any questions about this Privacy Policy, please email us directly or send a message via our <a href="/contact" class="text-link hover:underline font-semibold">Contact Page</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+</Layout>

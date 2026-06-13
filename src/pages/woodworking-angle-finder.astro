@@ -1,0 +1,265 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ImageAngleFinder from '../components/ImageAngleFinder.astro';
+import { Compass, Hammer, Table, Info } from '@lucide/astro';
+
+const pageTitle = "Woodworking Angle Finder & Miter Calculator | Miters & Bevels";
+const pageDescription = "Calculate miter and bevel angles for woodworking joints. Features an interactive compound miter saw calculator, polygon box joint guide, and photo angle tool.";
+const pageKeywords = "woodworking angle finder online, miter saw calculator, compound miter calculator, crown molding cut angles, joint angle finder";
+
+const standardShapes = [
+  { name: "Triangle", sides: 3, miter: "60.0°", joint: "120.0°" },
+  { name: "Square / Rectangle", sides: 4, miter: "45.0°", joint: "90.0°" },
+  { name: "Pentagon", sides: 5, miter: "36.0°", joint: "72.0°" },
+  { name: "Hexagon", sides: 6, miter: "30.0°", joint: "60.0°" },
+  { name: "Heptagon", sides: 7, miter: "25.7°", joint: "51.4°" },
+  { name: "Octagon", sides: 8, miter: "22.5°", joint: "45.0°" },
+  { name: "Decagon", sides: 10, miter: "18.0°", joint: "36.0°" },
+  { name: "Dodecagon", sides: 12, miter: "15.0°", joint: "30.0°" },
+];
+
+const schemaMarkup = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Woodworking Angle Finder & Miter Calculator",
+  "description": "Woodworking miter and bevel angle calculators, compound miter tools, and polygon joint tables.",
+  "mainEntity": {
+    "@type": "SoftwareApplication",
+    "name": "Woodworking Miter Calculator",
+    "operatingSystem": "All",
+    "applicationCategory": "CalculatorApplication",
+    "offers": {
+      "@type": "Offer",
+      "price": "0.00",
+      "priceCurrency": "USD"
+    }
+  }
+};
+---
+
+<Layout title={pageTitle} description={pageDescription} keywords={pageKeywords} schemaMarkup={schemaMarkup}>
+  <!-- Hero Section -->
+  <section class="py-12 bg-canvas-soft">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center mb-8">
+      <span class="font-mono text-xs font-semibold uppercase tracking-wider text-link bg-link-bg-soft px-3 py-1 rounded-full">
+        Woodworking & DIY
+      </span>
+      <h1 class="mt-4 font-sans text-4xl font-semibold tracking-[-1.5px] text-ink sm:text-5xl leading-tight">
+        Woodworking Miter & Bevel Calculator
+      </h1>
+      <p class="mt-3 mx-auto max-w-2xl font-sans text-base text-body">
+        Find exact cut angles for miter joints, polygon frames, and compound miter joints using our calculators or by measuring a joint photo.
+      </p>
+    </div>
+
+    <!-- Woodworking Joint Calculators -->
+    <div class="mx-auto max-w-6xl px-4 grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+      
+      <!-- Box/Polygon Miter Calculator -->
+      <div class="bg-white border border-hairline rounded-xl p-6 shadow-vercel-3 flex flex-col justify-between">
+        <div>
+          <h2 class="font-sans text-lg font-semibold tracking-[-0.5px] text-ink mb-1.5 flex items-center gap-2">
+            <Hammer class="h-4.5 w-4.5 text-link" />
+            Polygon Frame Calculator
+          </h2>
+          <p class="font-sans text-xs text-mute mb-5">Calculate the miter angle needed to construct regular multi-sided frames.</p>
+
+          <div class="flex flex-col gap-4">
+            <div class="flex flex-col gap-1.5">
+              <label for="poly-sides" class="font-sans text-xs font-semibold text-body uppercase tracking-wider">Number of Sides</label>
+              <input type="number" id="poly-sides" min="3" max="100" value="4" class="border border-hairline rounded-lg h-10 px-3 font-sans text-sm focus:outline-none focus:border-primary shadow-vercel-1" />
+            </div>
+
+            <div class="flex flex-col gap-1.5 pt-2">
+              <label for="poly-corner-angle" class="font-sans text-xs font-semibold text-body uppercase tracking-wider">Custom Corner Angle (Degrees)</label>
+              <input type="number" id="poly-corner-angle" min="1" max="359" value="90" class="border border-hairline rounded-lg h-10 px-3 font-sans text-sm focus:outline-none focus:border-primary shadow-vercel-1" />
+              <span class="font-sans text-[10px] text-mute">E.g., 90° for standard L-corners, 135° for octagonal bay window structures.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 pt-5 border-t border-hairline grid grid-cols-2 gap-4 bg-canvas-soft p-4 rounded-xl">
+          <div class="flex flex-col">
+            <span class="font-mono text-[9px] uppercase tracking-wider text-mute">Saw Miter Angle</span>
+            <span id="poly-saw-miter" class="font-sans text-xl font-bold text-ink mt-0.5">45.0°</span>
+            <span class="font-sans text-[9.5px] text-mute">Miter saw scale setting</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="font-mono text-[9px] uppercase tracking-wider text-mute">Joint Angle</span>
+            <span id="poly-joint" class="font-sans text-xl font-bold text-link mt-0.5">90.0°</span>
+            <span class="font-sans text-[9.5px] text-mute">Total joint angle</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Compound Miter Calculator -->
+      <div class="bg-white border border-hairline rounded-xl p-6 shadow-vercel-3 flex flex-col justify-between">
+        <div>
+          <h2 class="font-sans text-lg font-semibold tracking-[-0.5px] text-ink mb-1.5 flex items-center gap-2">
+            <Compass class="h-4.5 w-4.5 text-link" />
+            Compound Miter Saw Calculator
+          </h2>
+          <p class="font-sans text-xs text-mute mb-5">Calculate miter angle and bevel tilt settings for sloped boxes or crown molding.</p>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1.5">
+              <label for="wall-angle" class="font-sans text-xs font-semibold text-body uppercase tracking-wider">Corner Wall Angle</label>
+              <input type="number" id="wall-angle" min="1" max="179" value="90" class="border border-hairline rounded-lg h-10 px-3 font-sans text-sm focus:outline-none focus:border-primary shadow-vercel-1" />
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+              <label for="slope-angle" class="font-sans text-xs font-semibold text-body uppercase tracking-wider">Side Slope / Bevel</label>
+              <input type="number" id="slope-angle" min="0" max="89" value="38" class="border border-hairline rounded-lg h-10 px-3 font-sans text-sm focus:outline-none focus:border-primary shadow-vercel-1" />
+            </div>
+          </div>
+          <span class="font-sans text-[10px] text-mute block mt-2">Spring angle is 38° for standard crown molding, or enter the slope of your shadow box frame.</span>
+        </div>
+
+        <div class="mt-6 pt-5 border-t border-hairline grid grid-cols-2 gap-4 bg-canvas-soft p-4 rounded-xl">
+          <div class="flex flex-col">
+            <span class="font-mono text-[9px] uppercase tracking-wider text-mute">Saw Miter setting</span>
+            <span id="compound-miter" class="font-sans text-xl font-bold text-ink mt-0.5">31.6°</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="font-mono text-[9px] uppercase tracking-wider text-mute">Saw Bevel tilt</span>
+            <span id="compound-bevel" class="font-sans text-xl font-bold text-link mt-0.5">33.9°</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive Diagram Measurement -->
+    <div class="mx-auto max-w-7xl px-4 mb-16">
+      <div class="text-center mb-8">
+        <h2 class="font-sans text-2xl font-semibold tracking-[-0.8px] text-ink">
+          Measure Woodworking Joint Angles from Photos
+        </h2>
+        <p class="mt-2 text-sm text-body max-w-xl mx-auto">
+          Take a photo of a joint corner or blueprint, upload it here, and align the draggable handles to find the exact angle for your saw.
+        </p>
+      </div>
+
+      <ImageAngleFinder />
+      
+      <!-- Specialized Help -->
+      <div class="mx-auto max-w-3xl mt-4 bg-canvas-soft border border-hairline rounded-xl p-4 flex gap-3">
+        <Info class="h-4 w-4 shrink-0 text-mute mt-0.5" />
+        <div class="flex flex-col gap-1 text-left">
+          <h4 class="font-sans text-xs font-semibold text-ink">Measuring tips for woodworkers:</h4>
+          <p class="font-sans text-[11.5px] text-body leading-relaxed">
+            - Align the Vertex <strong class="text-ink">V</strong> perfectly on the inside or outside corner of your wooden joint.
+            - Place handles <strong class="text-ink">A</strong> and <strong class="text-ink">B</strong> flat along the intersecting board edges.
+            - The calculated angle is your joint angle. If joining two boards equally, divide this angle by 2 to get your miter cut angle (e.g. 90° joint = two 45° cuts).
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Miter Angles Reference Chart -->
+    <div id="miters" class="mx-auto max-w-4xl px-4 py-12">
+      <div class="bg-white border border-hairline rounded-xl p-6 md:p-8 shadow-vercel-2">
+        <h2 class="font-sans text-xl font-semibold tracking-[-0.5px] text-ink mb-6 flex items-center gap-2">
+          <Table class="h-5 w-5 text-link" />
+          Polygon Miter Cut Reference Chart
+        </h2>
+        <p class="font-sans text-sm text-body mb-6">
+          This reference chart lists the miter saw angle adjustments for constructing regular multi-sided frames (such as square boxes, hexagons, or octagons).
+        </p>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left font-sans text-sm divide-y divide-hairline">
+            <thead class="bg-canvas-soft-2 font-mono text-[10px] text-mute uppercase tracking-wider">
+              <tr>
+                <th class="px-4 py-3 font-semibold">Shape</th>
+                <th class="px-4 py-3 font-semibold">Number of Sides</th>
+                <th class="px-4 py-3 font-semibold">Miter Saw Setting</th>
+                <th class="px-4 py-3 font-semibold">Joint Corner Angle</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-hairline">
+              {standardShapes.map((row) => (
+                <tr class="hover:bg-canvas-soft transition-colors">
+                  <td class="px-4 py-3.5 font-semibold text-ink">{row.name}</td>
+                  <td class="px-4 py-3.5 text-body">{row.sides}</td>
+                  <td class="px-4 py-3.5 font-semibold text-link">{row.miter}</td>
+                  <td class="px-4 py-3.5 text-body">{row.joint}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  // Polygon frame inputs
+  const polySides = document.getElementById('poly-sides') as HTMLInputElement;
+  const polyCornerAngle = document.getElementById('poly-corner-angle') as HTMLInputElement;
+  const polySawMiter = document.getElementById('poly-saw-miter');
+  const polyJoint = document.getElementById('poly-joint');
+
+  // Compound miter inputs
+  const wallAngle = document.getElementById('wall-angle') as HTMLInputElement;
+  const slopeAngle = document.getElementById('slope-angle') as HTMLInputElement;
+  const compoundMiter = document.getElementById('compound-miter');
+  const compoundBevel = document.getElementById('compound-bevel');
+
+  if (polySides && polyCornerAngle) {
+    polySides.addEventListener('input', () => {
+      const sides = parseInt(polySides.value);
+      if (isNaN(sides) || sides < 3) return;
+
+      const jointAngle = ((sides - 2) * 180) / sides;
+      const sawMiter = 180 / sides; // Angle from center 0 of miter saw
+
+      polyCornerAngle.value = jointAngle.toFixed(1);
+      if (polySawMiter) polySawMiter.innerText = sawMiter.toFixed(1) + '°';
+      if (polyJoint) polyJoint.innerText = jointAngle.toFixed(1) + '°';
+    });
+
+    polyCornerAngle.addEventListener('input', () => {
+      const corner = parseFloat(polyCornerAngle.value);
+      if (isNaN(corner) || corner <= 0 || corner >= 360) return;
+
+      const sawMiter = (180 - corner) / 2; // Saw miter setting relative to center 90
+      
+      if (polySawMiter) polySawMiter.innerText = Math.abs(sawMiter).toFixed(1) + '°';
+      if (polyJoint) polyJoint.innerText = corner.toFixed(1) + '°';
+    });
+  }
+
+  // Compound miter calculation
+  // Formula for crown molding / sloped boxes:
+  // Miter saw angle = atan( sin(slope) / tan(wall/2) )
+  // Bevel tilt angle = asin( cos(slope) * sin(wall/2) )
+  function calculateCompound() {
+    if (!wallAngle || !slopeAngle || !compoundMiter || !compoundBevel) return;
+
+    const wall = parseFloat(wallAngle.value);
+    const slope = parseFloat(slopeAngle.value);
+
+    if (isNaN(wall) || isNaN(slope) || wall <= 0 || wall >= 180 || slope < 0 || slope >= 90) return;
+
+    const wallRad = (wall * Math.PI) / 180;
+    const slopeRad = (slope * Math.PI) / 180;
+
+    // Compound calculations
+    const miterRad = Math.atan(Math.sin(slopeRad) / Math.tan(wallRad / 2));
+    const bevelRad = Math.asin(Math.cos(slopeRad) * Math.sin(wallRad / 2));
+
+    const miterDeg = miterRad * (180 / Math.PI);
+    const bevelDeg = bevelRad * (180 / Math.PI);
+
+    compoundMiter.innerText = miterDeg.toFixed(1) + '°';
+    compoundBevel.innerText = bevelDeg.toFixed(1) + '°';
+  }
+
+  if (wallAngle && slopeAngle) {
+    wallAngle.addEventListener('input', calculateCompound);
+    slopeAngle.addEventListener('input', calculateCompound);
+    // Initial run
+    calculateCompound();
+  }
+</script>

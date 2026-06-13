@@ -1,0 +1,79 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import WebcamAngleFinder from '../../components/WebcamAngleFinder.astro';
+
+const pageTitle = "Live Webcam Angle Finder | Measure Angles from Camera";
+const pageDescription = "Use your live webcam or mobile camera to measure angles in real-time. Freeze frames, select cameras, and copy computed miter or slope angles instantly.";
+const pageKeywords = "webcam angle finder, measure angle from camera, online protractor camera, live angle measurement tool";
+
+const schemaMarkup = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Live Webcam Angle Finder",
+  "operatingSystem": "All",
+  "applicationCategory": "UtilityApplication",
+  "offers": {
+    "@type": "Offer",
+    "price": "0.00",
+    "priceCurrency": "USD"
+  },
+  "description": "Measure angles from live camera input using interactive browser-based overlays and freeze-frame capturing."
+};
+---
+
+<Layout title={pageTitle} description={pageDescription} keywords={pageKeywords} schemaMarkup={schemaMarkup}>
+  <section class="py-12 bg-canvas-soft">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center mb-8">
+      <span class="font-mono text-xs font-semibold uppercase tracking-wider text-violet-deep bg-violet-soft px-3 py-1 rounded-full">
+        Real-Time Mode
+      </span>
+      <h1 class="mt-4 font-sans text-4xl font-semibold tracking-[-1.5px] text-ink sm:text-5xl leading-tight">
+        Live Webcam Angle Finder
+      </h1>
+      <p class="mt-3 mx-auto max-w-2xl font-sans text-base text-body">
+        Hold objects in front of your webcam or use your smartphone camera to calculate angles directly in your web browser.
+      </p>
+    </div>
+
+    <!-- Live Webcam Tool Mount -->
+    <WebcamAngleFinder />
+
+    <!-- SEO Content Section -->
+    <div class="mx-auto max-w-4xl px-4 py-16 border-t border-hairline mt-12 bg-white rounded-xl shadow-vercel-2">
+      <h2 class="font-sans text-2xl font-semibold tracking-[-0.8px] text-ink mb-6">
+        How to Measure Angles Using Your Camera
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 text-left">
+        <div>
+          <div class="font-mono text-sm font-semibold text-[#7928ca] mb-2">01 / ALLOW CAMERA</div>
+          <p class="font-sans text-sm text-body leading-relaxed">
+            Click "Enable Camera" and approve browser permissions. We support both desktop webcams and smartphone cameras.
+          </p>
+        </div>
+        <div>
+          <div class="font-mono text-sm font-semibold text-[#7928ca] mb-2">02 / FREEZE SNAPSHOT</div>
+          <p class="font-sans text-sm text-body leading-relaxed">
+            Align the camera with the object, then click <strong class="text-ink">Freeze Frame</strong>. This locks the picture in place so you can measure stably.
+          </p>
+        </div>
+        <div>
+          <div class="font-mono text-sm font-semibold text-[#7928ca] mb-2">03 / MEASURE & COPY</div>
+          <p class="font-sans text-sm text-body leading-relaxed">
+            Drag the Vertex and outer handles on top of the frozen snapshot. Read the angle in degrees and copy it to your clipboard.
+          </p>
+        </div>
+      </div>
+
+      <div class="space-y-4 border-t border-hairline pt-6 text-left">
+        <h3 class="font-sans text-lg font-semibold text-ink">Engineered for Mobiles and Field Work</h3>
+        <p class="font-sans text-sm text-body leading-relaxed">
+          Our webcam mode is designed to be fully mobile-responsive. If you are a carpenter, builder, or DIYer on-site, open this page on your phone, select the rear-facing camera, and capture and measure angles directly without carrying physical measuring squares.
+        </p>
+        <ul class="list-disc pl-5 font-sans text-sm text-body space-y-1">
+          <li><strong>Front/Back Camera Support:</strong> Toggle between user-facing webcams and main environment cameras.</li>
+          <li><strong>No Server Latency:</strong> Video analysis runs directly on your device CPU—no video files are uploaded, keeping your data completely private.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</Layout>

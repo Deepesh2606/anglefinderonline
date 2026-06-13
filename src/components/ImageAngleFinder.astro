@@ -1,0 +1,1101 @@
+---
+import { RotateCcw, Camera, Upload, Trash2, Sliders, Layers, Info } from '@lucide/astro';
+---
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-3 sm:py-4 w-full" style="contain: layout paint style;">
+  <!-- Left Side: Interactive Workspace Container -->
+  <div class="flex flex-col items-center justify-center">
+    
+    <!-- Canvas workspace container -->
+    <div class="relative w-full aspect-square max-h-[400px] sm:max-h-[500px] rounded-xl border border-hairline overflow-hidden flex items-center justify-center select-none bg-white" id="canvas-container" style="contain: strict;">
+      <!-- Grid background pattern -->
+      <div class="absolute inset-0 opacity-20 dark:opacity-10 pointer-events-none" id="grid-bg" style="background-image: linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px); background-size: 40px 40px;"></div>
+
+      <!-- Live Webcam Stream (hidden by default) -->
+      <video id="camera-video" autoplay playsinline class="hidden absolute inset-0 w-full h-full object-cover opacity-85 transform-none" style="transform-origin: center center;"></video>
+
+      <!-- Uploaded Photo background (hidden by default) -->
+      <img id="photo-bg" decoding="async" class="hidden absolute inset-0 w-full h-full object-contain pointer-events-none opacity-90" />
+
+      <!-- SVG Interactive Protractor Overlay -->
+      <svg id="protractor-svg" class="absolute inset-0 w-full h-full cursor-default select-none pointer-events-auto">
+        <!-- Sector Swept Area -->
+        <path id="swept-sector" d="" fill="rgba(23, 23, 23, 0.08)" stroke="rgba(23, 23, 23, 0.3)" stroke-width="2" />
+
+        <!-- Tick Marks and Dial Labels (Pre-rendered dynamically in JS) -->
+        <g id="protractor-guide"></g>
+
+        <!-- Dashed Line L1 (Double-layered for contrast) -->
+        <line id="line-a-ext-bg" x1="0" y1="0" x2="0" y2="0" stroke="white" stroke-width="3" stroke-dasharray="4 4" stroke-opacity="0.3" />
+        <line id="line-a-ext" x1="0" y1="0" x2="0" y2="0" stroke="#171717" stroke-width="1.5" stroke-dasharray="8 4" stroke-opacity="0.4" />
+        
+        <!-- Measuring Line L1 -->
+        <line id="line-a-bg" x1="0" y1="0" x2="0" y2="0" stroke="white" stroke-width="6" stroke-linecap="round" stroke-opacity="0.2" />
+        <line id="line-a" x1="0" y1="0" x2="0" y2="0" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+
+        <!-- Dashed Line L2 -->
+        <line id="line-b-ext-bg" x1="0" y1="0" x2="0" y2="0" stroke="white" stroke-width="3" stroke-dasharray="4 4" stroke-opacity="0.3" />
+        <line id="line-b-ext" x1="0" y1="0" x2="0" y2="0" stroke="#171717" stroke-width="1.5" stroke-dasharray="8 4" stroke-opacity="0.4" />
+        
+        <!-- Measuring Line L2 -->
+        <line id="line-b-bg" x1="0" y1="0" x2="0" y2="0" stroke="white" stroke-width="6" stroke-linecap="round" stroke-opacity="0.2" />
+        <line id="line-b" x1="0" y1="0" x2="0" y2="0" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+
+        <!-- Draggable Handles -->
+        <!-- Center Vertex -->
+        <g id="vertex-handle-group" class="cursor-grab active:cursor-grabbing">
+          <circle id="vertex-handle-glow" cx="0" cy="0" r="18" fill="rgba(23, 23, 23, 0.08)" />
+          <circle id="vertex-handle" cx="0" cy="0" r="12" fill="white" stroke="currentColor" stroke-width="2.5" />
+          <text id="vertex-handle-text" x="0" y="0" fill="currentColor" font-weight="700" font-family="var(--font-mono)" font-size="10" text-anchor="middle" dominant-baseline="middle" pointer-events="none">V</text>
+        </g>
+
+        <!-- Handle L2 (was L1) -->
+        <g id="handle-a-group" class="cursor-grab active:cursor-grabbing">
+          <circle id="handle-a-glow" cx="0" cy="0" r="20" fill="rgba(23, 23, 23, 0.08)" />
+          <circle id="handle-a" cx="0" cy="0" r="14" fill="white" stroke="#171717" stroke-width="2.5" />
+          <text id="handle-a-text" x="0" y="0" fill="#171717" font-weight="700" font-family="var(--font-mono)" font-size="10" text-anchor="middle" dominant-baseline="middle" pointer-events="none">L2</text>
+        </g>
+
+        <!-- Handle L1 (was L2) -->
+        <g id="handle-b-group" class="cursor-grab active:cursor-grabbing">
+          <circle id="handle-b-glow" cx="0" cy="0" r="20" fill="rgba(23, 23, 23, 0.08)" />
+          <circle id="handle-b" cx="0" cy="0" r="14" fill="white" stroke="#171717" stroke-width="2.5" />
+          <text id="handle-b-text" x="0" y="0" fill="#171717" font-weight="700" font-family="var(--font-mono)" font-size="10" text-anchor="middle" dominant-baseline="middle" pointer-events="none">L1</text>
+        </g>
+
+        <!-- Floating Angle Text -->
+        <g id="floating-value-group" class="filter-readout-shadow">
+          <rect id="floating-value-bg" fill="#171717" />
+          <text id="floating-value-text" fill="white" font-family="var(--font-mono)" font-size="20" font-weight="700" text-anchor="middle" dominant-baseline="middle" pointer-events="none"></text>
+        </g>
+
+        <!-- Onboarding Hint Tooltip -->
+        <g id="onboarding-hint-group" pointer-events="none" class="transition-opacity duration-500 opacity-0">
+          <g class="animate-bounce-subtle">
+            <!-- Pointer pointing down -->
+            <path d="M -6 -24 L 6 -24 L 0 -18 Z" fill="#171717" />
+            <!-- Tooltip rectangle -->
+            <rect x="-105" y="-56" width="210" height="32" rx="8" fill="#171717" />
+            <text x="0" y="-40" fill="white" font-family="var(--font-sans)" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">Drag L1 & L2 to measure your angle</text>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <!-- Mobile Rotation Note -->
+    <div id="mobile-rotation-note" class="text-center text-xs text-neutral-500 mt-3 font-medium">
+      Rotate to landscape for better precision
+    </div>
+  </div>
+
+  <!-- Right Side: Sidebar Controls -->
+  <div class="flex flex-col gap-2">
+    <!-- Readout Card -->
+    <div class="p-4 rounded-2xl border border-hairline shadow-vercel-3 flex flex-col justify-between bg-white">
+      <div>
+        <span class="font-mono text-xs uppercase tracking-[0.1em] text-mute">Calculated Angle</span>
+        <div class="flex items-baseline gap-2 mt-1">
+          <h2 class="font-sans text-5xl font-semibold tracking-[-0.04em] text-ink" id="angle-readout">
+            <span>90.0</span><span class="text-3xl text-mute">°</span>
+          </h2>
+        </div>
+      </div>
+      
+      <div class="flex flex-col gap-2 mt-3">
+        <button id="btn-reset" class="w-full py-2 rounded-xl flex items-center justify-center gap-2 font-semibold text-base bg-white text-[#171717] border border-[#ebebeb] hover:bg-[#171717] hover:text-white hover:border-[#171717] transition-all active:scale-[0.98]">
+          <RotateCcw class="h-4.5 w-4.5" />
+          Reset Workspace
+        </button>
+        
+        <div class="grid grid-cols-2 gap-2">
+          <button id="btn-decrement" class="py-2 rounded-xl font-bold text-sm bg-white text-[#171717] border border-[#ebebeb] hover:bg-[#171717] hover:text-white hover:border-[#171717] transition-all active:scale-[0.98] shadow-sm">
+            -1° FINE TUNE
+          </button>
+          <button id="btn-increment" class="py-2 rounded-xl font-bold text-sm bg-white text-[#171717] border border-[#ebebeb] hover:bg-[#171717] hover:text-white hover:border-[#171717] transition-all active:scale-[0.98] shadow-sm">
+            +1° FINE TUNE
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      <!-- Snapping -->
+      <div class="p-4 rounded-2xl border border-hairline flex flex-col gap-2 bg-white">
+        <div class="flex items-center gap-2">
+          <Sliders class="h-4.5 w-4.5 text-mute" />
+          <h3 class="font-mono text-xs font-bold uppercase tracking-wider text-ink">Snapping</h3>
+        </div>
+
+        <div class="space-y-1">
+          <span class="font-mono text-xs text-mute uppercase tracking-widest">Snap</span>
+          <div class="flex gap-1 overflow-x-auto pb-0" id="snap-options">
+            {['0.1', '1', '5', '10', '30'].map((val) => (
+              <button class={`snap-btn px-2.5 py-1 rounded-lg font-mono text-sm font-bold border transition-all ${val === '1' ? 'bg-[#171717] text-white border-[#171717]' : 'bg-white text-[#171717] border-[#ebebeb] hover:bg-[#171717] hover:text-white hover:border-[#171717]'}`} data-snap={val}>{val}°</button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- Visual Settings -->
+      <div class="p-4 rounded-2xl border border-hairline space-y-2 bg-white">
+        <div class="flex items-center gap-2">
+          <Layers class="h-4.5 w-4.5 text-mute" />
+          <h3 class="font-mono text-xs font-bold uppercase tracking-wider text-ink">Configuration</h3>
+        </div>
+
+        <div class="grid grid-cols-1 gap-2">
+          <button id="toggle-reflex" class="flex items-center justify-between p-3 rounded-xl border border-[#ebebeb] hover:border-[#171717] transition-all">
+            <div class="flex items-center gap-1.5">
+              <span class="text-sm font-semibold text-ink">Reflex</span>
+            </div>
+            <span id="toggle-reflex-label" class="text-sm font-mono text-mute">OFF</span>
+          </button>
+          <button id="toggle-radians" class="flex items-center justify-between p-3 rounded-xl border border-[#ebebeb] hover:border-[#171717] transition-all">
+            <div class="flex items-center gap-1.5">
+              <span class="text-sm font-semibold text-ink">Radians</span>
+            </div>
+            <span id="toggle-radians-label" class="text-sm font-mono text-mute">OFF</span>
+          </button>
+          <button id="toggle-lock-center" class="flex items-center justify-between p-3 rounded-xl border border-[#171717] bg-[#171717]/5 transition-all">
+            <div class="flex items-center gap-1.5">
+              <span class="text-sm font-semibold text-ink">Lock Pivot</span>
+            </div>
+            <span id="toggle-lock-center-label" class="text-sm font-mono text-[#171717] font-bold">ON</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Media Controls -->
+    <div class="p-4 rounded-2xl border border-hairline space-y-2 bg-white">
+      <div class="flex items-center justify-between bg-[#171717]/5 dark:bg-white/5 p-3 rounded-xl border border-[#171717]/10 dark:border-white/10">
+        <div class="flex items-center gap-2">
+          <Camera class="h-4.5 w-4.5 text-ink" />
+          <div class="flex flex-col">
+            <span class="text-sm font-bold text-ink">Webcam</span>
+            <span class="text-xs text-mute uppercase">Live tracking</span>
+          </div>
+        </div>
+        <button id="toggle-camera" class="relative inline-flex h-6 w-12 shrink-0 cursor-pointer rounded-full bg-[#171717]/20 dark:bg-white/20 transition-all">
+          <span id="toggle-camera-dot" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white dark:bg-[#171717] shadow translate-x-0.5 mt-0.5"></span>
+        </button>
+      </div>
+
+      <div class="flex gap-1.5">
+        <input type="file" id="photo-upload-input" accept="image/*" class="hidden" />
+        <button id="btn-upload-photo" class="flex-1 py-2 rounded-xl flex items-center justify-center gap-1.5 text-sm font-bold bg-white dark:bg-white/5 text-[#171717] dark:text-white border border-neutral-300 dark:border-white/10 hover:bg-neutral-50 dark:hover:bg-white/10 transition-all active:scale-[0.98]">
+          <Upload class="h-4.5 w-4.5" />
+          Upload Background
+        </button>
+        <button id="btn-clear-photo" class="hidden px-4 rounded-xl text-[#171717] dark:text-white bg-white dark:bg-white/5 border border-neutral-300 dark:border-white/10 hover:bg-neutral-50 dark:hover:bg-white/10 transition-all active:scale-[0.98]">
+          <Trash2 class="h-4.5 w-4.5" />
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ============================================================
+  // CACHED DOM REFERENCES (avoid getElementById in hot path)
+  // ============================================================
+  const canvasContainer = document.getElementById('canvas-container');
+  const svgOverlay = document.getElementById('protractor-svg') as unknown as SVGSVGElement;
+  const protractorGuide = document.getElementById('protractor-guide');
+  const sweptSector = document.getElementById('swept-sector');
+  
+  const lineA = document.getElementById('line-a');
+  const lineABg = document.getElementById('line-a-bg');
+  const lineAExt = document.getElementById('line-a-ext');
+  const lineAExtBg = document.getElementById('line-a-ext-bg');
+  
+  const lineB = document.getElementById('line-b');
+  const lineBBg = document.getElementById('line-b-bg');
+  const lineBExt = document.getElementById('line-b-ext');
+  const lineBExtBg = document.getElementById('line-b-ext-bg');
+  
+  const vertexHandle = document.getElementById('vertex-handle');
+  const vertexHandleGroup = document.getElementById('vertex-handle-group');
+  const handleAGroup = document.getElementById('handle-a-group');
+  const handleBGroup = document.getElementById('handle-b-group');
+
+  const readoutBox = document.getElementById('angle-readout')?.querySelector('span');
+
+  const btnReset = document.getElementById('btn-reset');
+  const btnSelectL2 = document.getElementById('btn-select-l2');
+  const btnSelectL1 = document.getElementById('btn-select-l1');
+
+  // Function to reset protractor guide when dark mode toggles
+  (window as any).resetProtractorGuide = () => {
+    guideBuilt = false;
+    lastGuidePtV = { x: -9999, y: -9999 };
+    buildGuide();
+    updateOverlay();
+  };
+
+  const toggleReflex = document.getElementById('toggle-reflex');
+  const toggleRadians = document.getElementById('toggle-radians');
+  const toggleLockCenter = document.getElementById('toggle-lock-center');
+  const toggleCamera = document.getElementById('toggle-camera');
+
+  const cameraVideo = document.getElementById('camera-video') as HTMLVideoElement;
+  const photoBg = document.getElementById('photo-bg') as HTMLImageElement;
+  const photoUploadInput = document.getElementById('photo-upload-input') as HTMLInputElement;
+  const btnUploadPhoto = document.getElementById('btn-upload-photo');
+  const btnClearPhoto = document.getElementById('btn-clear-photo');
+
+  // Floating readout elements (cached once)
+  const floatingG = document.getElementById('floating-value-group');
+  const floatingT = document.getElementById('floating-value-text');
+  const floatingB = document.getElementById('floating-value-bg');
+
+  // ============================================================
+  // TRIG FUNCTIONS
+  // ============================================================
+  const DEG2RAD = Math.PI / 180;
+
+  // ============================================================
+  // STATE
+  // ============================================================
+  let ptV = { x: 200, y: 200 };
+  let angleA = 45;
+  let angleB = 135;
+  let radius = 120; // Dynamic radius based on container size
+  let placedPointsCount = 3; // Start with 3 so default landing page works out-of-the-box
+
+  let activeHandle: string | null = null;
+  let activeLine: 1 | 2 = 2;
+  let snapStep = 1.0;
+  let magnetThreshold = 4;
+
+  let isReflex = false;
+  let isRadians = false;
+  let isCenterLocked = true;
+  let isCameraOn = false;
+  let cameraStream: MediaStream | null = null;
+
+  // Onboarding hint state
+  let hintTimer: number | null = null;
+  let hintVisible = true;
+
+  function showPlacementHint() {
+    if (hintTimer) {
+      window.clearTimeout(hintTimer);
+      hintTimer = null;
+    }
+    
+    const hint = document.getElementById('onboarding-hint-group');
+    const textEl = hint?.querySelector('text');
+    const rectEl = hint?.querySelector('rect');
+    
+    if (!hint || !textEl) return;
+    
+    hint.style.display = '';
+    hint.classList.remove('opacity-0');
+    hint.classList.add('opacity-100');
+    hintVisible = true;
+    
+    let text = '';
+    let targetX = 200;
+    let targetY = 200;
+    
+    if (svgOverlay) {
+      const rect = svgOverlay.getBoundingClientRect();
+      if (rect.width > 0) {
+        targetX = rect.width / 2;
+        targetY = rect.height / 2;
+      }
+    }
+    
+    if (placedPointsCount === 0) {
+      text = "Tap on the image to place the Vertex (V)";
+    } else if (placedPointsCount === 1) {
+      text = "Tap on the image to place Line 1 (L1)";
+      const isMirrored = isCameraOn && cameraVideo.style.transform.includes('scaleX(-1)');
+      const width = svgOverlay.getBoundingClientRect().width || 400;
+      targetX = isMirrored ? width - ptV.x : ptV.x;
+      targetY = ptV.y;
+    } else if (placedPointsCount === 2) {
+      text = "Tap on the image to place Line 2 (L2)";
+      const cosB = Math.cos(angleB * DEG2RAD);
+      const sinB = Math.sin(angleB * DEG2RAD);
+      const bx = ptV.x + radius * cosB;
+      const by = ptV.y - radius * sinB;
+      
+      const isMirrored = isCameraOn && cameraVideo.style.transform.includes('scaleX(-1)');
+      const width = svgOverlay.getBoundingClientRect().width || 400;
+      targetX = isMirrored ? width - bx : bx;
+      targetY = by;
+    } else {
+      text = "Drag L1 & L2 to measure your angle";
+      const cosB = Math.cos(angleB * DEG2RAD);
+      const sinB = Math.sin(angleB * DEG2RAD);
+      const bx = ptV.x + radius * cosB;
+      const by = ptV.y - radius * sinB;
+      
+      const isMirrored = isCameraOn && cameraVideo.style.transform.includes('scaleX(-1)');
+      const width = svgOverlay.getBoundingClientRect().width || 400;
+      targetX = isMirrored ? width - bx : bx;
+      targetY = by;
+      
+      hintTimer = window.setTimeout(hideHint, 4000);
+    }
+    
+    textEl.textContent = text;
+    
+    // Adjust rect width dynamically based on text length
+    const fontSize = 11;
+    const padding = 24;
+    const w = text.length * fontSize * 0.55 + padding;
+    rectEl?.setAttribute('x', String(-w / 2));
+    rectEl?.setAttribute('width', String(w));
+    
+    hint.setAttribute('transform', `translate(${targetX},${targetY})`);
+  }
+
+  function hideHint() {
+    if (!hintVisible) return;
+    hintVisible = false;
+    if (hintTimer) {
+      window.clearTimeout(hintTimer);
+      hintTimer = null;
+    }
+    const hint = document.getElementById('onboarding-hint-group');
+    if (hint) {
+      hint.classList.remove('opacity-100');
+      hint.classList.add('opacity-0');
+      setTimeout(() => {
+        hint.style.display = 'none';
+      }, 500);
+    }
+  }
+
+  // Audio — only init on first interaction, not on load
+  let audioCtx: AudioContext | null = null;
+  let lastClickAngle = -1;
+  let isSoundEnabled = false;
+
+  function playClickSound() {
+    if (!isSoundEnabled) return;
+    try {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const now = audioCtx!.currentTime;
+      const osc = audioCtx!.createOscillator();
+      const gain = audioCtx!.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(700, now);
+      osc.frequency.exponentialRampToValueAtTime(150, now + 0.01);
+      gain.gain.setValueAtTime(0.008, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.01);
+      osc.connect(gain);
+      gain.connect(audioCtx!.destination);
+      osc.start(now);
+      osc.stop(now + 0.01);
+    } catch (e) { }
+  }
+
+  // ============================================================
+  // RENDER BATCHING
+  // ============================================================
+  let needsRender = false;
+  let lastFloatingValue = '';
+  let lastReadoutValue = '';
+  let lastFloatingWidth = 0;
+  function requestRender() {
+    if (needsRender) return;
+    needsRender = true;
+    requestAnimationFrame(() => {
+      updateOverlay();
+      needsRender = false;
+    });
+  }
+
+  // ============================================================
+  // PROTRACTOR GUIDE — BUILD ONCE, MOVE VIA TRANSFORM
+  // ============================================================
+  let guideBuilt = false;
+  let lastGuidePtV = { x: -9999, y: -9999 };
+
+  function buildGuide() {
+    if (!protractorGuide || guideBuilt) return;
+    const isDark = document.documentElement.classList.contains('dark');
+    const fillCol = isDark ? 'rgba(30, 41, 59, 0.4)' : 'rgba(255, 255, 255, 0.8)';
+    const strokeCol = isDark ? 'rgba(255, 255, 255, 0.15)' : '#171717';
+    const sC = isDark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.2)';
+    const textFill = isDark ? 'white' : 'black';
+
+    // Scale guide elements based on radius
+    const rOuter = radius;
+    const rInner = Math.max(radius - 30, radius * 0.75);
+    const rGearInner = Math.max(radius - 40, radius * 0.7);
+    const tickLen = Math.max(6, radius * 0.04);
+    const majorTickLen = Math.max(10, radius * 0.06);
+    const labelRadius = radius - Math.max(18, radius * 0.08);
+
+    // Build all SVG in one string pass — centered at origin, position via transform
+    let html = `<path d="M 0 ${-rOuter} A ${rOuter} ${rOuter} 0 1 1 ${-0.01} ${-rOuter} Z M 0 ${-rInner} A ${rInner} ${rInner} 0 1 1 ${-0.01} ${-rInner} Z" fill="${fillCol}" stroke="${strokeCol}" stroke-width="1.2" fill-rule="evenodd" />`;
+    
+    // Subtle gear teeth (every 10 degrees)
+    for (let deg = 0; deg < 360; deg += 10) {
+      const cos = Math.cos(deg * DEG2RAD);
+      const sin = Math.sin(deg * DEG2RAD);
+      const x1 = rOuter * cos;
+      const y1 = -rOuter * sin;
+      const x2 = (rOuter + Math.max(3, radius * 0.02)) * cos;
+      const y2 = -(rOuter + Math.max(3, radius * 0.02)) * sin;
+      html += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${sC}" stroke-width="1" />`;
+    }
+
+    // Inner subtle gear ring
+    for (let deg = 0; deg < 360; deg += 15) {
+      const cos = Math.cos(deg * DEG2RAD);
+      const sin = Math.sin(deg * DEG2RAD);
+      const x1 = rInner * cos;
+      const y1 = -rInner * sin;
+      const x2 = rGearInner * cos;
+      const y2 = -rGearInner * sin;
+      html += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${sC}" stroke-width="0.5" opacity="0.3" />`;
+    }
+
+    // Draw tick marks every 10 degrees + labels at 30°
+    for (let deg = 0; deg < 360; deg += 10) {
+      const cos = Math.cos(deg * DEG2RAD);
+      const sin = Math.sin(deg * DEG2RAD);
+      const isMajor = deg % 30 === 0;
+      const isMedium = deg % 10 === 0;
+      const len = isMajor ? majorTickLen : (isMedium ? tickLen : tickLen * 0.5);
+      const sW = isMajor ? 1.2 : 0.8;
+      const x1 = rOuter * cos;
+      const y1 = -rOuter * sin;
+      const x2 = (rOuter - len) * cos;
+      const y2 = -(rOuter - len) * sin;
+      html += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${isMajor ? strokeCol : sC}" stroke-width="${sW}" />`;
+      if (isMajor) {
+        const xl = labelRadius * cos;
+        const yl = -labelRadius * sin;
+        const fontSize = Math.max(7, radius * 0.045);
+        html += `<text x="${xl}" y="${yl}" font-family="var(--font-sans)" font-size="${fontSize}" fill="${textFill}" font-weight="600" text-anchor="middle" dominant-baseline="middle">${deg}°</text>`;
+      }
+    }
+    protractorGuide.innerHTML = html;
+    guideBuilt = true;
+  }
+
+  function positionGuide() {
+    if (!protractorGuide) return;
+    if (Math.abs(ptV.x - lastGuidePtV.x) > 1 || Math.abs(ptV.y - lastGuidePtV.y) > 1) {
+      protractorGuide.setAttribute('transform', `translate(${ptV.x},${ptV.y})`);
+      lastGuidePtV = { x: ptV.x, y: ptV.y };
+    }
+  }
+
+  // ============================================================
+  // LAYOUT INIT
+  // ============================================================
+  let cachedSvgRect: DOMRect | null = null;
+  let resizeTimer = 0;
+
+  window.addEventListener('resize', () => {
+    cachedSvgRect = null;
+    window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(resizeCanvas, 80);
+  }, { passive: true });
+
+  if ('requestIdleCallback' in window) {
+    (window as any).requestIdleCallback(resizeCanvas, { timeout: 500 });
+  } else {
+    window.setTimeout(resizeCanvas, 120);
+  }
+
+  // Show onboarding hint and reset workspace after layout stabilizes
+  window.setTimeout(() => {
+    resetWorkspaceOnLoad();
+  }, 500);
+
+  function resizeCanvas() {
+    if (!svgOverlay) return;
+    const rect = svgOverlay.getBoundingClientRect();
+    if (rect.width > 0) {
+      // Center the vertex
+      if (ptV.x === 200 && ptV.y === 200) {
+        ptV.x = rect.width / 2;
+        ptV.y = rect.height / 2;
+      }
+      // Calculate responsive radius - use 40% of the smaller dimension
+      const minDim = Math.min(rect.width, rect.height);
+      radius = Math.floor(minDim * 0.42);
+      // Ensure radius is within reasonable bounds
+      radius = Math.max(60, Math.min(radius, 240));
+      buildGuide();
+      updateOverlay();
+    }
+  }
+
+  // ============================================================
+  // POINTER EVENT HANDLING
+  // ============================================================
+  function getMousePos(e: MouseEvent | TouchEvent) {
+    if (!svgOverlay) return { x: 0, y: 0 };
+    const rect = cachedSvgRect || svgOverlay.getBoundingClientRect();
+    const clientX = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : (e as MouseEvent).clientY;
+    return { x: clientX - rect.left, y: clientY - rect.top };
+  }
+
+  vertexHandleGroup?.addEventListener('mousedown', (e) => { if (isCenterLocked) return; e.preventDefault(); e.stopPropagation(); cachedSvgRect = svgOverlay?.getBoundingClientRect() || null; activeHandle = 'V'; if (hintVisible && placedPointsCount === 3) hideHint(); });
+  handleAGroup?.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); cachedSvgRect = svgOverlay?.getBoundingClientRect() || null; activeHandle = 'A'; activeLine = 2; updateSelectionBorder(); if (hintVisible && placedPointsCount === 3) hideHint(); });
+  handleBGroup?.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); cachedSvgRect = svgOverlay?.getBoundingClientRect() || null; activeHandle = 'B'; activeLine = 1; updateSelectionBorder(); if (hintVisible && placedPointsCount === 3) hideHint(); });
+
+  vertexHandleGroup?.addEventListener('touchstart', (e) => { if (isCenterLocked) return; e.preventDefault(); e.stopPropagation(); cachedSvgRect = svgOverlay?.getBoundingClientRect() || null; activeHandle = 'V'; if (hintVisible && placedPointsCount === 3) hideHint(); }, { passive: false });
+  handleAGroup?.addEventListener('touchstart', (e) => { e.preventDefault(); e.stopPropagation(); cachedSvgRect = svgOverlay?.getBoundingClientRect() || null; activeHandle = 'A'; activeLine = 2; updateSelectionBorder(); if (hintVisible && placedPointsCount === 3) hideHint(); }, { passive: false });
+  handleBGroup?.addEventListener('touchstart', (e) => { e.preventDefault(); e.stopPropagation(); cachedSvgRect = svgOverlay?.getBoundingClientRect() || null; activeHandle = 'B'; activeLine = 1; updateSelectionBorder(); if (hintVisible && placedPointsCount === 3) hideHint(); }, { passive: false });
+
+  window.addEventListener('mousemove', (e) => { if (!activeHandle) return; dragTo(getMousePos(e)); });
+  window.addEventListener('touchmove', (e) => { if (!activeHandle || !e.touches[0]) return; dragTo(getMousePos(e)); }, { passive: false });
+  window.addEventListener('mouseup', () => { activeHandle = null; cachedSvgRect = null; });
+  window.addEventListener('touchend', () => { activeHandle = null; cachedSvgRect = null; });
+
+  function dragTo(pos: { x: number; y: number }) {
+    if (hintVisible && placedPointsCount === 3) hideHint();
+    
+    // Map mouse coordinate back if mirrored
+    const isMirrored = isCameraOn && cameraVideo.style.transform.includes('scaleX(-1)');
+    const width = svgOverlay.getBoundingClientRect().width || 400;
+    const mappedX = isMirrored ? width - pos.x : pos.x;
+    const mappedPos = { x: mappedX, y: pos.y };
+
+    if (activeHandle === 'V') {
+      if (!isCenterLocked) ptV = mappedPos;
+    } else if (activeHandle === 'A' || activeHandle === 'B') {
+      const dx = mappedPos.x - ptV.x;
+      const dy = ptV.y - mappedPos.y;
+      let deg = Math.atan2(dy, dx) * (180 / Math.PI);
+      if (deg < 0) deg += 360;
+      deg = Math.round(deg / snapStep) * snapStep;
+
+      const nearest30 = Math.round(deg / 30) * 30;
+      const diff30 = Math.abs(deg - nearest30);
+      if (diff30 <= magnetThreshold || (360 - diff30) <= magnetThreshold) {
+        deg = (nearest30 + 360) % 360;
+      }
+
+      if (activeHandle === 'A') angleA = deg % 360;
+      else angleB = deg % 360;
+    }
+    requestRender();
+  }
+
+  function handleSvgClickOrTouch(e: MouseEvent | TouchEvent) {
+    if (placedPointsCount >= 3) return; // All points placed, normal dragging
+    
+    if (e.type === 'touchstart') {
+      e.preventDefault();
+    }
+    
+    cachedSvgRect = svgOverlay.getBoundingClientRect();
+    const pos = getMousePos(e);
+    
+    // Map mouse coordinate back if mirrored
+    const isMirrored = isCameraOn && cameraVideo.style.transform.includes('scaleX(-1)');
+    const width = cachedSvgRect.width || 400;
+    const mappedX = isMirrored ? width - pos.x : pos.x;
+    const mappedPos = { x: mappedX, y: pos.y };
+
+    if (placedPointsCount === 0) {
+      ptV = mappedPos;
+      placedPointsCount = 1;
+      updateOverlay();
+      showPlacementHint();
+    } else if (placedPointsCount === 1) {
+      const dx = mappedPos.x - ptV.x;
+      const dy = ptV.y - mappedPos.y;
+      let deg = Math.atan2(dy, dx) * (180 / Math.PI);
+      if (deg < 0) deg += 360;
+      angleB = Math.round(deg / snapStep) * snapStep;
+      
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const height = cachedSvgRect.height || 400;
+      radius = Math.max(60, Math.min(dist, Math.min(width, height) * 0.45));
+      
+      guideBuilt = false;
+      buildGuide();
+      
+      placedPointsCount = 2;
+      updateOverlay();
+      showPlacementHint();
+    } else if (placedPointsCount === 2) {
+      const dx = mappedPos.x - ptV.x;
+      const dy = ptV.y - mappedPos.y;
+      let deg = Math.atan2(dy, dx) * (180 / Math.PI);
+      if (deg < 0) deg += 360;
+      angleA = Math.round(deg / snapStep) * snapStep;
+      
+      placedPointsCount = 3;
+      updateOverlay();
+      showPlacementHint();
+    }
+  }
+
+  svgOverlay?.addEventListener('mousedown', handleSvgClickOrTouch);
+  svgOverlay?.addEventListener('touchstart', handleSvgClickOrTouch, { passive: false });
+
+  // ============================================================
+  // SIDEBAR CONTROLS
+  // ============================================================
+  const btnDecrement = document.getElementById('btn-decrement');
+  const btnIncrement = document.getElementById('btn-increment');
+
+  btnDecrement?.addEventListener('click', () => {
+    if (activeLine === 1) angleA = (angleA - 1 + 360) % 360;
+    else angleB = (angleB - 1 + 360) % 360;
+    updateOverlay();
+  });
+
+  btnIncrement?.addEventListener('click', () => {
+    if (activeLine === 1) angleA = (angleA + 1) % 360;
+    else angleB = (angleB + 1) % 360;
+    updateOverlay();
+  });
+
+  function updateSelectionBorder() {
+    if (activeLine === 2) {
+      if (btnSelectL2) {
+        btnSelectL2.classList.add('bg-[#171717]', 'text-white', 'border-[#171717]');
+        btnSelectL2.classList.remove('bg-white', 'text-[#171717]', 'border-[#ebebeb]');
+        btnSelectL2.textContent = "L2 ACTIVE";
+      }
+      if (btnSelectL1) {
+        btnSelectL1.classList.remove('bg-[#171717]', 'text-white', 'border-[#171717]');
+        btnSelectL1.classList.add('bg-white', 'text-[#171717]', 'border-[#ebebeb]');
+        btnSelectL1.textContent = "L1 SELECT";
+      }
+    } else {
+      if (btnSelectL1) {
+        btnSelectL1.classList.add('bg-[#171717]', 'text-white', 'border-[#171717]');
+        btnSelectL1.classList.remove('bg-white', 'text-[#171717]', 'border-[#ebebeb]');
+        btnSelectL1.textContent = "L1 ACTIVE";
+      }
+      if (btnSelectL2) {
+        btnSelectL2.classList.remove('bg-[#171717]', 'text-white', 'border-[#171717]');
+        btnSelectL2.classList.add('bg-white', 'text-[#171717]', 'border-[#ebebeb]');
+        btnSelectL2.textContent = "L2 SELECT";
+      }
+    }
+  }
+
+  const snapButtons = document.querySelectorAll('[data-snap]');
+  snapButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      snapButtons.forEach(b => {
+        b.classList.remove('bg-[#171717]', 'text-white', 'border-[#171717]');
+        b.classList.add('bg-white', 'text-[#171717]', 'border-[#ebebeb]');
+      });
+      const target = e.currentTarget as HTMLButtonElement;
+      target.classList.remove('bg-white', 'text-[#171717]', 'border-[#ebebeb]');
+      target.classList.add('bg-[#171717]', 'text-white', 'border-[#171717]');
+      snapStep = parseFloat(target.dataset.snap || '1.0');
+    });
+  });
+
+  toggleReflex?.addEventListener('click', () => { isReflex = !isReflex; updateToggleState(toggleReflex, 'toggle-reflex-label', isReflex); updateOverlay(); });
+  toggleRadians?.addEventListener('click', () => { isRadians = !isRadians; updateToggleState(toggleRadians, 'toggle-radians-label', isRadians); updateOverlay(); });
+  toggleLockCenter?.addEventListener('click', () => { isCenterLocked = !isCenterLocked; updateToggleState(toggleLockCenter, 'toggle-lock-center-label', isCenterLocked); updateOverlay(); });
+
+  function resetWorkspaceOnLoad() {
+    angleA = 45;
+    angleB = 135;
+    if (svgOverlay) {
+      const rect = svgOverlay.getBoundingClientRect();
+      if (rect.width > 0) {
+        ptV = { x: rect.width / 2, y: rect.height / 2 };
+      }
+    }
+    
+    // Check if background photo is active (i.e., photoBg has a source and is not hidden)
+    const isPhotoActive = photoBg && photoBg.src !== '' && !photoBg.classList.contains('hidden');
+    
+    if (isPhotoActive) {
+      // Keep background, clear placed points to let them place again
+      placedPointsCount = 0;
+    } else {
+      // Default center layout with 3 points
+      placedPointsCount = 3;
+      
+      // Clear photo background if not active
+      if (photoBg) {
+        photoBg.src = '';
+        photoBg.classList.add('hidden');
+      }
+      if (btnClearPhoto) {
+        btnClearPhoto.classList.add('hidden');
+      }
+    }
+    
+    // Turn off camera if running and we are doing a full reset
+    if (isCameraOn && !isPhotoActive) {
+      stopCamera();
+      const dot = document.getElementById('toggle-camera-dot');
+      if (toggleCamera) {
+        toggleCamera.classList.remove('bg-[#171717]');
+        dot?.classList.remove('translate-x-5');
+      }
+      isCameraOn = false;
+    }
+    
+    updateOverlay();
+    showPlacementHint();
+  }
+
+  btnReset?.addEventListener('click', () => {
+    resetWorkspaceOnLoad();
+  });
+
+  function updateToggleState(element: HTMLElement | null, labelId: string, active: boolean) {
+    if (!element) return;
+    const label = document.getElementById(labelId);
+    if (active) {
+      element.classList.add('border-[#171717]', 'bg-[#171717]/5');
+      element.classList.remove('border-[#ebebeb]');
+      if (label) {
+        label.textContent = "ON";
+        label.classList.add('text-[#171717]', 'font-bold');
+        label.classList.remove('text-mute');
+      }
+    } else {
+      element.classList.remove('border-[#171717]', 'bg-[#171717]/5');
+      element.classList.add('border-[#ebebeb]');
+      if (label) {
+        label.textContent = "OFF";
+        label.classList.remove('text-[#171717]', 'font-bold');
+        label.classList.add('text-mute');
+      }
+    }
+  }
+
+  // Camera stream
+  toggleCamera?.addEventListener('click', async () => {
+    isCameraOn = !isCameraOn;
+    const dot = document.getElementById('toggle-camera-dot');
+    if (isCameraOn) {
+      toggleCamera.classList.add('bg-[#171717]');
+      dot?.classList.add('translate-x-5');
+      try {
+        cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        cameraVideo.srcObject = cameraStream;
+        cameraVideo.onloadedmetadata = () => {
+          const track = cameraStream?.getVideoTracks()[0];
+          if (track) {
+            const settings = track.getSettings();
+            const label = track.label?.toLowerCase() || '';
+            const isFront = settings.facingMode === 'user' || label.includes('front') || label.includes('selfie') || label.includes('user');
+            if (isFront) {
+              cameraVideo.style.transform = 'scaleX(-1)';
+            } else {
+              cameraVideo.style.transform = 'none';
+            }
+          }
+          requestRender();
+        };
+        cameraVideo.classList.remove('hidden');
+        photoBg.classList.add('hidden');
+      } catch (err) {
+        isCameraOn = false;
+        toggleCamera.classList.remove('bg-[#171717]');
+        dot?.classList.remove('translate-x-5');
+      }
+    } else {
+      toggleCamera.classList.remove('bg-[#171717]');
+      dot?.classList.remove('translate-x-5');
+      stopCamera();
+    }
+  });
+
+  function stopCamera() {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      cameraStream = null;
+    }
+    cameraVideo.srcObject = null;
+    cameraVideo.style.transform = 'none';
+    cameraVideo.classList.add('hidden');
+  }
+
+  btnUploadPhoto?.addEventListener('click', () => photoUploadInput.click());
+
+  photoUploadInput?.addEventListener('change', (e) => {
+    const target = e.target as HTMLInputElement;
+    if (target.files && target.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        if (typeof evt.target?.result === 'string') {
+          photoBg.src = evt.target.result;
+          photoBg.classList.remove('hidden');
+          btnClearPhoto?.classList.remove('hidden');
+          stopCamera();
+          
+          // Reset point placement state for the uploaded image!
+          placedPointsCount = 0;
+          updateOverlay();
+          showPlacementHint();
+        }
+      };
+      reader.readAsDataURL(target.files[0]);
+    }
+  });
+
+  btnClearPhoto?.addEventListener('click', () => {
+    photoBg.src = '';
+    photoBg.classList.add('hidden');
+    btnClearPhoto.classList.add('hidden');
+    placedPointsCount = 3;
+    // Recenter
+    if (svgOverlay) {
+      const rect = svgOverlay.getBoundingClientRect();
+      if (rect.width > 0) {
+        ptV = { x: rect.width / 2, y: rect.height / 2 };
+      }
+    }
+    updateOverlay();
+    showPlacementHint();
+  });
+
+  // ============================================================
+  // CORE RENDER — OPTIMIZED (minimal DOM mutations)
+  // ============================================================
+  function updateOverlay() {
+    if (!svgOverlay) return;
+
+    // Visibility based on placedPointsCount
+    const showV = placedPointsCount >= 1;
+    const showB = placedPointsCount >= 2;
+    const showA = placedPointsCount >= 3;
+
+    if (vertexHandleGroup) vertexHandleGroup.style.display = showV ? '' : 'none';
+
+    if (handleBGroup) handleBGroup.style.display = showB ? '' : 'none';
+    if (lineB) lineB.style.display = showB ? '' : 'none';
+    if (lineBBg) lineBBg.style.display = showB ? '' : 'none';
+    if (lineBExt) lineBExt.style.display = showB ? '' : 'none';
+    if (lineBExtBg) lineBExtBg.style.display = showB ? '' : 'none';
+
+    if (handleAGroup) handleAGroup.style.display = showA ? '' : 'none';
+    if (lineA) lineA.style.display = showA ? '' : 'none';
+    if (lineABg) lineABg.style.display = showA ? '' : 'none';
+    if (lineAExt) lineAExt.style.display = showA ? '' : 'none';
+    if (lineAExtBg) lineAExtBg.style.display = showA ? '' : 'none';
+
+    if (sweptSector) sweptSector.style.display = showA ? '' : 'none';
+    if (protractorGuide) protractorGuide.style.display = showA ? '' : 'none';
+    if (floatingG) floatingG.style.display = showA ? '' : 'none';
+
+    // Update Fine-tune Buttons state
+    if (btnDecrement && btnIncrement) {
+      if (placedPointsCount < 3) {
+        btnDecrement.classList.add('opacity-50', 'cursor-not-allowed');
+        btnIncrement.classList.add('opacity-50', 'cursor-not-allowed');
+      } else {
+        btnDecrement.classList.remove('opacity-50', 'cursor-not-allowed');
+        btnIncrement.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+    }
+
+    const cosA = Math.cos(angleA * DEG2RAD), sinA = Math.sin(angleA * DEG2RAD);
+    const cosB = Math.cos(angleB * DEG2RAD), sinB = Math.sin(angleB * DEG2RAD);
+
+    const ax = ptV.x + radius * cosA;
+    const ay = ptV.y - radius * sinA;
+    const bx = ptV.x + radius * cosB;
+    const by = ptV.y - radius * sinB;
+
+    // If mirrored, flip the X coordinates
+    const isMirrored = isCameraOn && cameraVideo.style.transform.includes('scaleX(-1)');
+    const width = svgOverlay.getBoundingClientRect().width || 400;
+    const renderX = (val: number) => isMirrored ? width - val : val;
+
+    const rxV = renderX(ptV.x);
+    const ryV = ptV.y;
+    const rxA = renderX(ax);
+    const ryA = ay;
+    const rxB = renderX(bx);
+    const ryB = by;
+
+    // Lines — batch setAttribute calls
+    const vx = String(rxV), vy = String(ryV);
+    const sax = String(rxA), say = String(ryA);
+    const sbx = String(rxB), sby = String(ryB);
+
+    if (showA) {
+      lineA?.setAttribute('x1', vx); lineA?.setAttribute('y1', vy);
+      lineA?.setAttribute('x2', sax); lineA?.setAttribute('y2', say);
+    }
+    if (showB) {
+      lineB?.setAttribute('x1', vx); lineB?.setAttribute('y1', vy);
+      lineB?.setAttribute('x2', sbx); lineB?.setAttribute('y2', sby);
+    }
+
+    // Extension lines (shorter — 800px is enough)
+    const extLen = 800;
+    const eax = String(renderX(ptV.x + extLen * cosA)), eay = String(ptV.y - extLen * sinA);
+    const ebx = String(renderX(ptV.x + extLen * cosB)), eby = String(ptV.y - extLen * sinB);
+    if (showA) {
+      lineAExt?.setAttribute('x1', vx); lineAExt?.setAttribute('y1', vy);
+      lineAExt?.setAttribute('x2', eax); lineAExt?.setAttribute('y2', eay);
+    }
+    if (showB) {
+      lineBExt?.setAttribute('x1', vx); lineBExt?.setAttribute('y1', vy);
+      lineBExt?.setAttribute('x2', ebx); lineBExt?.setAttribute('y2', eby);
+    }
+
+    // Background lines (shadow layer)
+    if (showA) {
+      lineABg?.setAttribute('x1', vx); lineABg?.setAttribute('y1', vy);
+      lineABg?.setAttribute('x2', sax); lineABg?.setAttribute('y2', say);
+      lineAExtBg?.setAttribute('x1', vx); lineAExtBg?.setAttribute('y1', vy);
+      lineAExtBg?.setAttribute('x2', eax); lineAExtBg?.setAttribute('y2', eay);
+    }
+    if (showB) {
+      lineBBg?.setAttribute('x1', vx); lineBBg?.setAttribute('y1', vy);
+      lineBBg?.setAttribute('x2', sbx); lineBBg?.setAttribute('y2', sby);
+      lineBExtBg?.setAttribute('x1', vx); lineBExtBg?.setAttribute('y1', vy);
+      lineBExtBg?.setAttribute('x2', ebx); lineBExtBg?.setAttribute('y2', eby);
+    }
+
+    // Handles — use cached refs
+    if (showV) vertexHandleGroup?.setAttribute('transform', `translate(${vx},${vy})`);
+    if (showA) handleAGroup?.setAttribute('transform', `translate(${sax},${say})`);
+    if (showB) handleBGroup?.setAttribute('transform', `translate(${sbx},${sby})`);
+
+    if (isCenterLocked) {
+      vertexHandle?.setAttribute('stroke-opacity', '0.3');
+      vertexHandleGroup?.classList.remove('cursor-grab');
+      vertexHandleGroup?.classList.add('cursor-not-allowed');
+    } else {
+      vertexHandle?.removeAttribute('stroke-opacity');
+      vertexHandleGroup?.classList.add('cursor-grab');
+      vertexHandleGroup?.classList.remove('cursor-not-allowed');
+    }
+
+    // Angle calculation
+    let diff = angleB - angleA;
+    if (diff < 0) diff += 360;
+    const finalAngle = isReflex ? 360 - diff : diff;
+
+    // Sound — only on settled degree change
+    const currentIntAngle = Math.round(finalAngle);
+    if (lastClickAngle !== -1 && currentIntAngle !== lastClickAngle) {
+      playClickSound();
+    }
+    lastClickAngle = currentIntAngle;
+
+    // Position guide (just moves the transform, no rebuild)
+    if (showA) {
+      positionGuide();
+    }
+
+    // Arc Sector - scale with radius
+    if (sweptSector && showA) {
+      const rArc = Math.min(40, radius * 0.2);
+      const radA = angleA * DEG2RAD, radB = angleB * DEG2RAD;
+      const sax2 = renderX(ptV.x + rArc * Math.cos(radA));
+      const say2 = ptV.y - rArc * Math.sin(radA);
+      const sbx2 = renderX(ptV.x + rArc * Math.cos(radB));
+      const sby2 = ptV.y - rArc * Math.sin(radB);
+      const largeArc = finalAngle > 180 ? 1 : 0;
+      const sweepFlag = (isReflex ? 1 : 0) ^ (isMirrored ? 1 : 0);
+      sweptSector.setAttribute('d', `M ${vx} ${vy} L ${String(sax2)} ${say2} A ${rArc} ${rArc} 0 ${largeArc} ${sweepFlag} ${String(sbx2)} ${sby2} Z`);
+    }
+
+    // Floating Readout — use cached refs
+    if (floatingG && floatingT && floatingB && showA) {
+      const str = isRadians ? (finalAngle * DEG2RAD).toFixed(3) + ' rad' : finalAngle.toFixed(1) + '°';
+      if (str !== lastFloatingValue) {
+        floatingT.textContent = str;
+        lastFloatingValue = str;
+      }
+      
+      const fontSize = 20;
+      const paddingX = 20;
+      const paddingY = 10;
+      const charWidth = fontSize * 0.6;
+      const w = str.length * charWidth + paddingX * 2;
+      const h = fontSize + paddingY * 2;
+      
+      if (w !== lastFloatingWidth) {
+        floatingB.setAttribute('x', String(-w / 2));
+        floatingB.setAttribute('y', String(-h / 2));
+        floatingB.setAttribute('width', String(w));
+        floatingB.setAttribute('height', String(h));
+        floatingB.setAttribute('rx', String(8));
+        floatingT.setAttribute('font-size', String(fontSize));
+        lastFloatingWidth = w;
+      }
+      
+      // Position clearly above the center vertex handle (ptV.x, ptV.y), not overlapping it
+      const tX = rxV;
+      const tY = ryV - 48; // vertex glow is r=18, badge height is 40 (goes 20px below center). 18 + 20 + 10px spacing = 48px
+      floatingG.setAttribute('transform', `translate(${tX},${tY})`);
+    }
+
+    // Position Onboarding Hint near Handle B (L1)
+    if (hintVisible && placedPointsCount === 3) {
+      const hintGroup = document.getElementById('onboarding-hint-group');
+      if (hintGroup) {
+        hintGroup.setAttribute('transform', `translate(${sbx},${sby})`);
+      }
+    }
+
+    const readoutValue = isRadians ? (finalAngle * DEG2RAD).toFixed(3) : finalAngle.toFixed(1);
+    if (readoutBox && readoutValue !== lastReadoutValue) {
+      if (placedPointsCount < 3) {
+        readoutBox.textContent = "—";
+        lastReadoutValue = "—";
+      } else {
+        readoutBox.textContent = readoutValue;
+        lastReadoutValue = readoutValue;
+      }
+    }
+
+    const unitSpan = document.getElementById('angle-readout')?.querySelector('.text-3xl');
+    if (unitSpan) {
+      unitSpan.style.display = placedPointsCount < 3 ? 'none' : '';
+    }
+  }
+</script>
+
+<style>
+  @keyframes bounce-subtle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+  .animate-bounce-subtle {
+    animation: bounce-subtle 1.5s infinite ease-in-out;
+  }
+  .filter-readout-shadow {
+    filter: drop-shadow(0px 2px 8px rgba(0,0,0,0.2));
+  }
+
+  @media (max-width: 480px) {
+    #canvas-container {
+      width: 100vw !important;
+      position: relative;
+      left: 50%;
+      right: 50%;
+      margin-left: -50vw !important;
+      margin-right: -50vw !important;
+      border-left: none !important;
+      border-right: none !important;
+      border-radius: 0 !important;
+    }
+  }
+
+  #mobile-rotation-note {
+    display: none;
+  }
+  @media (max-width: 480px) and (orientation: portrait) {
+    #mobile-rotation-note {
+      display: block;
+    }
+  }
+</style>

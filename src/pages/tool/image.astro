@@ -1,0 +1,80 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ImageAngleFinder from '../../components/ImageAngleFinder.astro';
+
+const pageTitle = "Measure Angle from Photo Online | Image Angle Finder";
+const pageDescription = "Upload an image, sketch or photo and drag points to measure any angle instantly. Free online angle measurement tool with Complementary and Supplementary calculations.";
+const pageKeywords = "measure angle from photo online, find angle between two lines online, online angle finder, angle measurement tool free";
+
+const schemaMarkup = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Online Image Angle Finder",
+  "operatingSystem": "All",
+  "applicationCategory": "UtilityApplication",
+  "offers": {
+    "@type": "Offer",
+    "price": "0.00",
+    "priceCurrency": "USD"
+  },
+  "description": "Calculate angles from uploaded photos, diagrams, and drawings instantly using an interactive browser-based protractor."
+};
+---
+
+<Layout title={pageTitle} description={pageDescription} keywords={pageKeywords} schemaMarkup={schemaMarkup}>
+  <section class="py-12 bg-canvas-soft">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center mb-8">
+      <span class="font-mono text-xs font-semibold uppercase tracking-wider text-link bg-link-bg-soft px-3 py-1 rounded-full">
+        Web Utility
+      </span>
+      <h1 class="mt-4 font-sans text-4xl font-semibold tracking-[-1.5px] text-ink sm:text-5xl leading-tight">
+        Measure Angle From Photo Online
+      </h1>
+      <p class="mt-3 mx-auto max-w-2xl font-sans text-base text-body">
+        Upload an image, diagram, blueprint, or sketch and drag the interactive handles to find the exact angle between lines.
+      </p>
+    </div>
+
+    <!-- Interactive Tool Mount -->
+    <ImageAngleFinder />
+
+    <!-- SEO Content Section -->
+    <div class="mx-auto max-w-4xl px-4 py-16 border-t border-hairline mt-12 bg-white rounded-xl shadow-vercel-2">
+      <h2 class="font-sans text-2xl font-semibold tracking-[-0.8px] text-ink mb-6">
+        How to Measure Angles from an Image or Diagram
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 text-left">
+        <div>
+          <div class="font-mono text-sm font-semibold text-link mb-2">01 / UPLOAD</div>
+          <p class="font-sans text-sm text-body leading-relaxed">
+            Drag and drop your image (PNG, JPG, or WebP) directly into the upload area or click to select from your files.
+          </p>
+        </div>
+        <div>
+          <div class="font-mono text-sm font-semibold text-link mb-2">02 / ADJUST</div>
+          <p class="font-sans text-sm text-body leading-relaxed">
+            Position the black vertex point <strong class="text-ink">V</strong> at the corner. Align points <strong class="text-ink">A</strong> and <strong class="text-ink">B</strong> along the sides of the angle.
+          </p>
+        </div>
+        <div>
+          <div class="font-mono text-sm font-semibold text-link mb-2">03 / COPY & EXPORT</div>
+          <p class="font-sans text-sm text-body leading-relaxed">
+            Read the angle instantly in degrees. Copy the angle to your clipboard or download the annotated image as a PNG.
+          </p>
+        </div>
+      </div>
+
+      <div class="space-y-4 border-t border-hairline pt-6 text-left">
+        <h3 class="font-sans text-lg font-semibold text-ink">Why Use Our Image Angle Finder?</h3>
+        <p class="font-sans text-sm text-body leading-relaxed">
+          Traditional protractors are difficult to align on digital screens. Our tool allows you to upload any file—including architectural blue-prints, geometry assignments, woodworking joints, or construction site photographs—and measure angles down to 0.1° accuracy.
+        </p>
+        <ul class="list-disc pl-5 font-sans text-sm text-body space-y-1">
+          <li><strong>No Sign-Up Required:</strong> Use the tool immediately without email registration or logins.</li>
+          <li><strong>100% Ad-Free:</strong> No distracting ads or pop-ups blocking your workspace.</li>
+          <li><strong>Privacy First:</strong> Your uploaded images are processed entirely in your web browser. Nothing is sent to a server.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</Layout>

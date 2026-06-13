@@ -1,0 +1,139 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Check, Info } from '@lucide/astro';
+
+const pageTitle = "Pricing | Free Online Angle Finder";
+const pageDescription = "Online Angle Finder is 100% free and ad-free. Compare our Free and Mock Pro tiers to see the Vercel-style pricing design.";
+
+const freeFeatures = [
+  "Upload unlimited images",
+  "Live webcam protractor mode",
+  "Calculate complementary angles",
+  "Download annotated PNGs",
+  "100% private local processing",
+  "No registration required",
+];
+
+const proFeatures = [
+  "All Free features included",
+  "Save measurement history (local)",
+  "Custom overlay colors & lines",
+  "Pre-loaded architectural templates",
+  "Priority community support",
+  "Ad-free forever guarantee",
+];
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <section class="py-16 md:py-24 bg-canvas-soft">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center mb-16">
+      <span class="font-mono text-xs font-semibold uppercase tracking-wider text-link bg-link-bg-soft px-3 py-1 rounded-full">
+        Pricing
+      </span>
+      <h1 class="mt-4 font-sans text-4xl font-semibold tracking-[-1.8px] text-ink sm:text-5xl leading-tight">
+        Simple, transparent plans.
+      </h1>
+      <p class="mt-3 mx-auto max-w-xl font-sans text-base text-body">
+        Our core tools are 100% free with no ads. We believe digital utilities should be clean and accessible to everyone.
+      </p>
+    </div>
+
+    <!-- Pricing Cards Grid -->
+    <div class="mx-auto max-w-4xl px-4 grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+      
+      <!-- Free Plan (Light Card) -->
+      <div class="bg-white border border-hairline rounded-2xl p-8 flex flex-col justify-between shadow-vercel-3 hover:shadow-vercel-4 transition-all duration-200">
+        <div>
+          <div class="flex justify-between items-start">
+            <div>
+              <h2 class="font-sans text-lg font-semibold text-ink">Free Plan</h2>
+              <p class="font-sans text-xs text-mute mt-1">Perfect for students and casual DIY users.</p>
+            </div>
+            <span class="inline-flex items-center rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-medium text-neutral-800">
+              Active
+            </span>
+          </div>
+
+          <div class="mt-6 flex items-baseline gap-1">
+            <span class="font-sans text-4xl font-semibold tracking-[-1.5px] text-ink">$0</span>
+            <span class="font-mono text-xs text-mute uppercase">/ forever</span>
+          </div>
+
+          <!-- Feature List -->
+          <ul role="list" class="mt-8 space-y-3.5">
+            {freeFeatures.map((feature) => (
+              <li class="flex items-start gap-3">
+                <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 mt-0.5">
+                  <Check class="h-3.5 w-3.5" />
+                </span>
+                <span class="font-sans text-sm text-body">{feature}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div class="mt-8">
+          <a
+            href="/tool/image"
+            class="w-full inline-flex h-11 items-center justify-center rounded-full border border-hairline bg-white font-sans text-sm font-semibold text-ink shadow-vercel-1 hover:bg-canvas-soft transition-all duration-150"
+          >
+            Start Measuring Now
+          </a>
+        </div>
+      </div>
+
+      <!-- Pro Plan (Polarity-Flipped Dark Card) -->
+      <div class="bg-primary dark:bg-[#080B10] border-0 dark:border dark:border-white/10 rounded-2xl p-8 flex flex-col justify-between text-white shadow-vercel-4 hover:shadow-vercel-5 transition-all duration-200 relative overflow-hidden">
+        <!-- Floating atmospheric backdrop inside the card -->
+        <div class="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-gradient-preview-start opacity-30 blur-2xl pointer-events-none"></div>
+        
+        <div class="relative z-10">
+          <div class="flex justify-between items-start">
+            <div>
+              <h2 class="font-sans text-lg font-semibold text-white">Pro Contractor</h2>
+              <p class="font-sans text-xs text-neutral-300 mt-1">For woodworkers, builders, and professionals.</p>
+            </div>
+            <span class="inline-flex items-center rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-medium text-neutral-200">
+              Popular
+            </span>
+          </div>
+
+          <div class="mt-6 flex items-baseline gap-1">
+            <span class="font-sans text-4xl font-semibold tracking-[-1.5px] text-white">$0</span>
+            <span class="font-mono text-xs text-neutral-400 uppercase">/ free beta</span>
+          </div>
+
+          <!-- Feature List -->
+          <ul role="list" class="mt-8 space-y-3.5">
+            {proFeatures.map((feature) => (
+              <li class="flex items-start gap-3">
+                <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/10 text-emerald-400 mt-0.5">
+                  <Check class="h-3.5 w-3.5" />
+                </span>
+                <span class="font-sans text-sm text-neutral-200">{feature}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div class="mt-8 relative z-10">
+          <a
+            href="/tool/image"
+            class="w-full inline-flex h-11 items-center justify-center rounded-full bg-white font-sans text-sm font-semibold text-ink shadow-vercel-2 hover:bg-neutral-100 transition-all duration-150"
+          >
+            Launch Pro Tools
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pricing FAQ Info -->
+    <div class="mx-auto max-w-2xl px-4 mt-16 text-center">
+      <div class="inline-flex items-center gap-2 bg-white border border-hairline rounded-full px-4 py-2 text-xs text-body shadow-vercel-1">
+        <Info class="h-4 w-4 text-link" />
+        <span>Need a custom volume license or PDF reporting API?</span>
+        <a href="/contact" class="text-link font-semibold hover:underline">Contact Us</a>
+      </div>
+    </div>
+  </section>
+</Layout>

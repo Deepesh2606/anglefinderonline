@@ -1,0 +1,52 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const pageTitle = "Terms of Service | Online Angle Finder";
+const pageDescription = "Review the Terms of Service for Online Angle Finder. Free online geometry utility tools provided as-is.";
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <section class="py-16 bg-canvas-soft">
+    <div class="mx-auto max-w-3xl px-4">
+      <div class="bg-white border border-hairline rounded-2xl p-8 md:p-12 shadow-vercel-3 text-left space-y-6">
+        <h1 class="font-sans text-3xl font-semibold tracking-[-1.28px] text-ink border-b border-hairline pb-4 leading-none">
+          Terms of Service
+        </h1>
+        <p class="font-mono text-xs text-mute uppercase">Last updated: June 12, 2026</p>
+
+        <p class="font-sans text-sm text-body leading-relaxed">
+          Welcome to <strong class="text-ink">Online Angle Finder</strong>. By accessing our website and using our measurement tools, you agree to comply with the following terms.
+        </p>
+
+        <h2 class="font-sans text-lg font-semibold text-ink pt-2 tracking-[-0.5px]">1. Use of the Services</h2>
+        <p class="font-sans text-sm text-body leading-relaxed">
+          Online Angle Finder is provided as a free web utility. You are granted permission to upload images and load live camera streams for the purpose of angle calculations, drawing lines, and downloading annotated results.
+        </p>
+
+        <h2 class="font-sans text-lg font-semibold text-ink pt-2 tracking-[-0.5px]">2. No Warranties (Provided As-Is)</h2>
+        <p class="font-sans text-sm text-body leading-relaxed">
+          While we strive for high precision (calculating angles down to 0.1°), our tools are provided "as-is" without warranty of any kind. Actual results can vary based on image perspective, camera distortion, handle alignment precision, or screen resolution.
+        </p>
+
+        <h2 class="font-sans text-lg font-semibold text-ink pt-2 tracking-[-0.5px]">3. Professional Liability Disclaimer</h2>
+        <p class="font-sans text-sm text-body leading-relaxed">
+          If you are using this tool for construction, structural framing, roofing, carpentry, or masonry work:
+        </p>
+        <ul class="list-disc pl-5 font-sans text-sm text-body space-y-1">
+          <li>Always double-check calculations using mechanical tools (e.g. speed squares, protractors, plumb lines) before cutting materials.</li>
+          <li>We are not responsible for any materials wasted or errors made due to calculation variations.</li>
+        </ul>
+
+        <h2 class="font-sans text-lg font-semibold text-ink pt-2 tracking-[-0.5px]">4. Intellectual Property</h2>
+        <p class="font-sans text-sm text-body leading-relaxed">
+          The code, design system, logo, and copy of Online Angle Finder are intellectual property of the site operators. You may not scrape our templates or republish our mathematical engine.
+        </p>
+
+        <h2 class="font-sans text-lg font-semibold text-ink pt-2 tracking-[-0.5px]">5. Changes to Terms</h2>
+        <p class="font-sans text-sm text-body leading-relaxed">
+          We reserve the right to modify these terms at any time. Any changes will be posted on this page with an updated timestamp.
+        </p>
+      </div>
+    </div>
+  </section>
+</Layout>

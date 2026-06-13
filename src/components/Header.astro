@@ -1,0 +1,108 @@
+si---
+import { Camera, Image, Compass, HelpCircle, BookOpen, Sun, Moon, Menu } from '@lucide/astro';
+
+const pathname = Astro.url.pathname;
+
+const navLinks = [
+  { name: 'Image Tool', href: '/tool/image', icon: Image },
+  { name: 'Webcam Tool', href: '/tool/webcam', icon: Camera },
+  { name: 'Roof Pitch', href: '/roof-pitch-calculator', icon: Compass },
+  { name: 'Woodworking', href: '/woodworking-angle-finder', icon: Compass },
+  { name: 'Pricing', href: '/pricing', icon: HelpCircle },
+  { name: 'Blog', href: '/blog', icon: BookOpen },
+];
+---
+
+<header class="sticky top-0 z-50 w-full bg-gradient-to-r from-[#171717] via-[#1f1f1f] to-[#27272a] dark:from-[#0D1117] dark:via-[#0a0d14] dark:to-[#080B10] backdrop-blur-md backdrop-saturate-150 border-b border-gray-700/80 dark:border-white/10 transition-colors duration-300 shadow-lg shadow-black/10">
+  <nav class="mx-auto flex max-w-7xl items-center justify-between px-3 sm:px-4 lg:px-6 py-2.5 sm:py-3">
+    <a href="/" class="flex items-center gap-1.5 sm:gap-2 group shrink-0">
+      <div class="logo-pill bg-white dark:bg-white p-1.5 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center transition-transform group-hover:rotate-6">
+        <img src="/logo.svg" alt="Logo" class="h-4.5 w-4.5 sm:h-5.5 sm:w-5.5" style="--logo-primary: #171717; --logo-accent: #0070f3;" />
+      </div>
+      <span class="font-semibold text-sm sm:text-base lg:text-lg tracking-tight text-white dark:text-slate-100 truncate max-w-[140px] sm:max-w-none" style="color: white !important;">Online Angle Finder</span>
+    </a>
+    
+    <div class="flex items-center gap-1 sm:gap-1.5">
+      <div class="hidden lg:flex gap-1 sm:gap-1.5">
+        {navLinks.map((link) => (
+          <a href={link.href} class="relative px-2.5 sm:px-3 lg:px-4 py-1.5 rounded-full text-xs sm:text-sm lg:text-base font-medium text-gray-300 dark:text-slate-300 hover:text-white dark:hover:text-white transition-all duration-300 overflow-hidden whitespace-nowrap" style="color: rgb(209 213 219) !important;">
+            <span class="relative z-10" style="color: rgb(209 213 219) !important;">{link.name}</span>
+            <span class="absolute inset-0 bg-gradient-to-r from-[#007cf0]/10 to-[#7928ca]/10 dark:from-[#232325]/20 dark:to-[#3a3a3d]/20 rounded-full transform scale-x-0 origin-left hover:scale-x-100 transition-transform duration-300 ease-out"></span>
+          </a>
+        ))}
+      </div>
+
+      <button id="theme-toggle" class="relative h-8 w-8 sm:h-9 sm:w-9 rounded-full text-gray-300 dark:text-slate-300 hover:text-white dark:hover:text-white transition-all duration-300 ease-out overflow-hidden border border-gray-600/50 dark:border-white/10 bg-[#1C1C1D]/45 dark:bg-[#080B10]/45 backdrop-blur-sm shrink-0 hover:bg-white/10" aria-label="Toggle theme" style="color: rgb(209 213 219) !important;">
+        <Sun class="sun-icon theme-toggle-icon absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-4 w-4 sm:h-4.5 sm:w-4.5" />
+        <Moon class="moon-icon theme-toggle-icon absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-4 w-4 sm:h-4.5 sm:w-4.5" />
+      </button>
+
+      <button id="mobile-menu-btn" class="lg:hidden h-8 w-8 sm:h-9 sm:w-9 rounded-full text-gray-300 dark:text-slate-300 border border-gray-600/50 dark:border-white/10 bg-[#1C1C1D]/45 dark:bg-[#080B10]/45 backdrop-blur-sm flex items-center justify-center shrink-0 hover:bg-white/10 transition-all duration-300 ease-out" style="color: rgb(209 213 219) !important;">
+        <Menu class="h-4 w-4 sm:h-4.5 sm:w-4.5" />
+      </button>
+    </div>
+  </nav>
+
+  <div id="mobile-menu" class="hidden lg:hidden border-t border-gray-600/50 dark:border-white/10 px-3 sm:px-4 py-4 flex flex-col gap-2 bg-[#1C1C1D]/95 dark:bg-[#080B10]/95 backdrop-blur-lg">
+        {navLinks.map((link) => (
+          <a href={link.href} class="relative px-3 py-2.5 rounded-xl text-sm sm:text-base font-medium text-gray-300 dark:text-slate-300 hover:text-white dark:hover:text-white transition-all duration-300 overflow-hidden" style="color: rgb(209 213 219) !important;">
+            <span class="relative z-10" style="color: rgb(209 213 219) !important;">{link.name}</span>
+            <span class="absolute inset-0 bg-gradient-to-r from-[#007cf0]/10 to-[#7928ca]/10 dark:from-[#232325]/20 dark:to-[#3a3a3d]/20 rounded-xl transform scale-x-0 origin-left hover:scale-x-100 transition-transform duration-300 ease-out"></span>
+          </a>
+        ))}
+  </div>
+</header>
+
+<style>
+  /* Theme toggle icon transitions */
+  .theme-toggle-icon {
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+  }
+
+  :global(.dark) .sun-icon {
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
+  }
+
+  :global(.dark) .moon-icon {
+    transform: rotate(90deg) scale(0);
+    opacity: 0;
+  }
+
+  .sun-icon {
+    transform: rotate(-90deg) scale(0);
+    opacity: 0;
+  }
+
+  .moon-icon {
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
+  }
+
+  /* Logo color variables */
+  :global(.dark) img[src="/logo.svg"] {
+    --logo-primary: #f1f5f9;
+    --logo-accent: #232325;
+  }
+</style>
+
+<script>
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const themeToggle = document.getElementById('theme-toggle');
+
+  menuBtn?.addEventListener('click', () => {
+    mobileMenu?.classList.toggle('hidden');
+  });
+
+  themeToggle?.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.toggle('dark');
+    localStorage.setItem('anglefinder-theme', isDark ? 'dark' : 'light');
+    if (typeof (window as any).resetProtractorGuide === 'function') {
+      (window as any).resetProtractorGuide();
+    }
+    if (typeof (window as any).resetWebcamProtractorGuide === 'function') {
+      (window as any).resetWebcamProtractorGuide();
+    }
+  });
+</script>

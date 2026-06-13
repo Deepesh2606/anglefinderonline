@@ -1,0 +1,479 @@
+---
+import Layout from "../layouts/Layout.astro";
+import FAQ from "../components/FAQ.astro";
+import ImageAngleFinder from "../components/ImageAngleFinder.astro";
+import {
+  Camera,
+  Image,
+  ArrowRight,
+  Check,
+  X,
+  Shield,
+  Cpu,
+  RefreshCw,
+  Zap,
+  Compass,
+} from "@lucide/astro";
+
+const faqs = [
+  {
+    question: "How do you use an online angle finder?",
+    answer:
+      'To use an online angle finder, upload a photo or open the webcam tool, then draw two lines along the edges you want to measure. Our free <a href="/online-protractor" class="text-link hover:underline text-[#0070f3]">online protractor</a> calculates the angle between the lines instantly and shows the result in degrees. You can also view related angles such as complementary and supplementary angles.',
+  },
+  {
+    question: "How do I measure an angle from a photo?",
+    answer:
+      'To measure an angle from a photo, upload the image to the <a href="/image-angle-finder" class="text-link hover:underline text-[#0070f3]">image angle finder</a> tool and place two lines on the sides of the angle. Once both lines are positioned correctly, the calculator finds the angle between them automatically. This is useful for geometry, woodworking, roofing, construction, and DIY measurements.',
+  },
+  {
+    question: "How do you read an angle finder?",
+    answer:
+      'To read an angle finder, look at the degree value shown after aligning the measuring lines with the object or shape. On this <a href="/online-protractor" class="text-link hover:underline text-[#0070f3]">online angle finder</a>, the angle value appears instantly on screen after you draw two lines. A smaller value means a narrower angle, while a larger value means a wider angle.',
+  },
+  {
+    question: "How do you read a protractor angle finder?",
+    answer:
+      'To read a protractor angle finder, place the center point at the vertex of the angle and align one side with the zero-degree line. Then read the degree marking where the other side crosses the scale. With this online <a href="/online-protractor" class="text-link hover:underline text-[#0070f3]">protractor angle finder</a>, you draw two digital lines instead of reading printed degree marks.',
+  },
+  {
+    question: "How do you use a digital angle finder?",
+    answer:
+      "A digital angle finder measures the angle between two surfaces and displays the result in degrees. This online digital angle finder works in a similar way, but inside your browser. Upload an image or use your webcam, mark the two sides of the angle, and the tool calculates the measurement automatically.",
+  },
+  {
+    question: "Can I use this angle finder for miter cuts?",
+    answer:
+      "Yes, you can use this angle finder for planning miter cuts by measuring the angle between two edges in a photo or camera view. It helps estimate the angle before cutting wood or trim. For final cutting, always verify the measurement with a physical tool because camera perspective can affect accuracy.",
+  },
+  {
+    question: "Can I use an angle finder for woodworking?",
+    answer:
+      'Yes, this online angle finder can help with woodworking tasks such as checking board angles, planning cuts, measuring joints, and estimating miter angles. Using our <a href="/woodworking-angle-finder" class="text-link hover:underline text-[#0070f3]">woodworking angle finder</a>, upload a clear photo or use webcam mode, draw lines along the wood edges, and read the angle result instantly.',
+  },
+  {
+    question: "Is this online angle finder free?",
+    answer:
+      "Yes, the basic online angle finder is free to use. You can upload images, draw lines, measure angles, view related angle values, copy results, and download annotated images. Advanced features such as batch processing or PDF reports may be added later as optional premium tools.",
+  },
+  {
+    question: "Can I use my webcam to measure angles?",
+    answer:
+      'Yes, webcam mode lets you measure angles directly from your camera. Open our <a href="/webcam-angle-finder" class="text-link hover:underline text-[#0070f3]">webcam angle finder</a>, point your camera at the object, draw two lines over the live frame, and get the angle result instantly. This is useful when you do not already have a photo to upload.',
+  },
+  {
+    question: "How accurate is an online angle finder?",
+    answer:
+      "An online angle finder can be accurate when the photo is clear, the camera is straight, and the lines are placed carefully. Accuracy may decrease if the image is tilted, distorted, blurry, or taken from an angle. For professional construction or safety-critical work, confirm results with a physical measuring tool.",
+  },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((faq) => ({
+    "@type": "Question",
+    name: faq.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: faq.answer,
+    },
+  })),
+};
+
+const comparisonData = [
+  { feature: "Interactive Ad-Free Workspace", us: true, them: false },
+  { feature: "Local GPU-Native Processing", us: true, them: false },
+  { feature: "Zero Server Media Uploads", us: true, them: false },
+  { feature: "Live Webcam Feed Integration", us: true, them: false },
+  { feature: "Double-Layer High-Contrast Lines", us: true, them: false },
+  { feature: "Doughnut Tick Backing Scale", us: true, them: false },
+  {
+    feature: "Core Web Vitals Performance",
+    us: "Under 100ms",
+    them: "Slow (> 3s)",
+  },
+];
+---
+
+<Layout schemaMarkup={faqSchema} theme="light">
+  <!-- Hero Section -->
+  <section
+    class="relative pt-16 pb-10 sm:pb-14 lg:pb-20 overflow-hidden bg-[#fafafa] text-center"
+  >
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col items-center select-none">
+      <!-- Pill Badge -->
+      <div
+        class="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-white px-4 py-1.5 text-xs text-[#171717] mb-3 font-semibold shadow-vercel-1"
+      >
+        <span class="w-1.5 h-1.5 rounded-full bg-[#171717]"></span>
+        <span>Instant Angle & Slope Analyzer</span>
+      </div>
+
+      <!-- Main Heading -->
+      <h1
+        class="font-sans text-3xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-[#171717] leading-snug"
+      >
+        Precision Digital Protractor
+        <span class="block text-base font-semibold text-[#6B7280] mt-0.5">— Online Tool</span>
+      </h1>
+
+      <!-- Description -->
+      <p
+        class="mt-3 sm:mt-4 font-sans text-sm sm:text-base lg:text-lg text-[#4d4d4d] leading-relaxed max-w-xl sm:max-w-2xl mx-auto px-4"
+      >
+        Measure roof pitch, joint angles, and slopes instantly — from a photo or your webcam. No app, no signup, no ads.
+      </p>
+
+      <!-- Main Action Buttons -->
+      <div
+        class="mt-4 sm:mt-6 flex flex-col xs:flex-row items-center justify-center gap-3 w-full max-w-md mx-auto px-3"
+      >
+        <a
+          href="#angle-meter"
+          class="group w-full sm:w-60 inline-flex h-12 sm:h-14 items-center justify-center gap-2 sm:gap-3 rounded-xl bg-[#171717] hover:bg-neutral-800 text-white dark:bg-white dark:hover:bg-slate-100 dark:text-[#0D1117] px-6 sm:px-10 font-sans text-sm sm:text-base font-bold shadow-lg hover:shadow-xl transition-all duration-300 ease-out transform hover:-translate-y-0.5"
+        >
+          <Compass class="h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
+          <span>Measure Now</span>
+        </a>
+        <a
+          href="/tool/webcam"
+          class="group w-full sm:w-60 inline-flex h-12 sm:h-14 items-center justify-center gap-2 sm:gap-3 rounded-xl border border-[#171717] bg-transparent text-[#171717] hover:bg-neutral-100 dark:border-white dark:border-[1.5px] dark:text-white dark:hover:bg-white/10 px-6 sm:px-10 font-sans text-sm sm:text-base font-medium transition-all duration-300 ease-out transform hover:-translate-y-0.5"
+        >
+          <Camera class="h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
+          <span>Use Camera</span>
+        </a>
+      </div>
+
+      <!-- Feature Pills Section (with Why Choose label and light gray bg block) -->
+      <div class="mt-6 sm:mt-8 bg-[#F5F5F5] dark:bg-white/[0.04] p-4 sm:p-5 rounded-xl border border-neutral-100 dark:border-transparent max-w-xl w-full mx-auto text-center shadow-sm">
+        <p class="font-sans text-[11px] tracking-[0.1em] text-[#888888] dark:text-[#6B7280] font-semibold uppercase mb-3">WHY IT'S DIFFERENT</p>
+        <div class="flex flex-wrap justify-center gap-2">
+          <span
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#ebebeb] bg-white text-[#888888] font-mono text-[10px] sm:text-xs shadow-sm whitespace-nowrap dark:bg-white/[0.02] dark:border-white/10 dark:text-slate-300"
+          >
+            High Precision Scale
+          </span>
+          <span
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#ebebeb] bg-white text-[#888888] font-mono text-[10px] sm:text-xs shadow-sm whitespace-nowrap dark:bg-white/[0.02] dark:border-white/10 dark:text-slate-300"
+          >
+            Zero Server Traffic
+          </span>
+          <span
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#ebebeb] bg-white text-[#888888] font-mono text-[10px] sm:text-xs shadow-sm whitespace-nowrap dark:bg-white/[0.02] dark:border-white/10 dark:text-slate-300"
+          >
+            Live Video Framing
+          </span>
+          <span
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#ebebeb] bg-white text-[#888888] font-mono text-[10px] sm:text-xs shadow-sm whitespace-nowrap dark:bg-white/[0.02] dark:border-white/10 dark:text-slate-300"
+          >
+            Client-Side Security
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Angle Meter Tool Section -->
+  <section class="pb-16 sm:pb-20 bg-[#fafafa]" id="angle-meter">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-6 sm:mb-8">
+        <h2 class="font-sans text-xl sm:text-2xl font-bold tracking-tight text-[#171717]">
+          Interactive Measure Workspace
+        </h2>
+        <p class="font-sans text-xs text-[#888888] mt-1">
+          Reposition the handles along the fixed perimeter dial to analyze
+          custom angles
+        </p>
+      </div>
+      <ImageAngleFinder />
+    </div>
+  </section>
+
+
+
+  <!-- Core Features / Pillars -->
+  <section class="py-16 sm:py-20 bg-white border-y border-[#ebebeb] relative">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12 sm:mb-16">
+        <h2
+          class="font-mono text-xs font-semibold uppercase tracking-wider text-[#0070f3]"
+        >
+          Engineered Design System
+        </h2>
+        <p
+          class="mt-3 font-sans text-xl sm:text-2xl md:text-4xl font-semibold tracking-[-1px] text-[#171717]"
+        >
+          Built for high-contrast visibility and total security.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+        <!-- Feature 1 -->
+        <div
+          class="group flex flex-col gap-3 sm:gap-4 p-4 sm:p-6 rounded-xl border border-[#ebebeb] bg-[#fafafa] hover:bg-white hover:border-[#0070f3]/30 hover:shadow-lg transition-all duration-300 ease-out transform hover:-translate-y-1"
+        >
+          <div
+            class="h-10 w-10 flex items-center justify-center rounded-lg bg-white group-hover:bg-[#0070f3] text-[#0070f3] group-hover:text-white border border-[#ebebeb] group-hover:border-[#0070f3] shadow-vercel-1 transition-all duration-300 ease-out"
+          >
+            <Shield class="h-5 w-5" />
+          </div>
+          <h3 class="font-sans text-base sm:text-lg font-semibold text-[#171717]">
+            Sandboxed Client Operations
+          </h3>
+          <p class="font-sans text-sm text-[#4d4d4d] leading-relaxed">
+            All calculations and image parses execute locally within your
+            browser sandbox. Your camera streams and images are never sent to
+            external servers.
+          </p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div
+          class="group flex flex-col gap-3 sm:gap-4 p-4 sm:p-6 rounded-xl border border-[#ebebeb] bg-[#fafafa] hover:bg-white hover:border-[#0070f3]/30 hover:shadow-lg transition-all duration-300 ease-out transform hover:-translate-y-1"
+        >
+          <div
+            class="h-10 w-10 flex items-center justify-center rounded-lg bg-white group-hover:bg-[#0070f3] text-[#0070f3] group-hover:text-white border border-[#ebebeb] group-hover:border-[#0070f3] shadow-vercel-1 transition-all duration-300 ease-out"
+          >
+            <Zap class="h-5 w-5" />
+          </div>
+          <h3 class="font-sans text-base sm:text-lg font-semibold text-[#171717]">
+            Zero Interface Blockers
+          </h3>
+          <p class="font-sans text-sm text-[#4d4d4d] leading-relaxed">
+            Our clean workspace avoids distracting ads, banner blocks, and
+            cookies. We offer a dedicated developer-grade canvas designed for
+            concentration.
+          </p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div
+          class="group flex flex-col gap-3 sm:gap-4 p-4 sm:p-6 rounded-xl border border-[#ebebeb] bg-[#fafafa] hover:bg-white hover:border-[#0070f3]/30 hover:shadow-lg transition-all duration-300 ease-out transform hover:-translate-y-1"
+        >
+          <div
+            class="h-10 w-10 flex items-center justify-center rounded-lg bg-white group-hover:bg-[#0070f3] text-[#0070f3] group-hover:text-white border border-[#ebebeb] group-hover:border-[#0070f3] shadow-vercel-1 transition-all duration-300 ease-out"
+          >
+            <Cpu class="h-5 w-5" />
+          </div>
+          <h3 class="font-sans text-base sm:text-lg font-semibold text-[#171717]">
+            Freeze-Frame Stabilization
+          </h3>
+          <p class="font-sans text-sm text-[#4d4d4d] leading-relaxed">
+            Eliminate camera shake and alignment challenges. Take a quick static
+            snapshot of the live webcam feed to align measurements with
+            accuracy.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Competitor Weakness Comparison Chart -->
+  <section class="py-12 sm:py-16 lg:py-20 bg-[#fafafa]">
+    <div class="mx-auto max-w-5xl px-3 sm:px-6 lg:px-8">
+      <div class="text-center mb-8 sm:mb-12">
+        <h2
+          class="font-mono text-xs font-semibold uppercase tracking-wider text-[#0070f3]"
+        >
+          Technical Auditing
+        </h2>
+        <p
+          class="mt-3 font-sans text-xl sm:text-2xl md:text-3xl font-semibold tracking-[-0.8px] text-[#171717]"
+        >
+          Comparing architectural approaches
+        </p>
+      </div>
+
+      <div
+        class="bg-white border border-[#ebebeb] rounded-xl overflow-hidden shadow-vercel-3"
+      >
+        <div class="overflow-x-auto">
+        <table
+          class="w-full text-left font-sans text-sm divide-y divide-[#ebebeb]"
+        >
+          <thead
+            class="bg-[#fafafa] font-mono text-[10px] sm:text-xs text-[#888888] uppercase tracking-wider"
+          >
+            <tr>
+              <th class="px-3 sm:px-6 py-3 sm:py-4 font-semibold border-b border-[#ebebeb] whitespace-nowrap"
+                >Workspace Capabilities</th
+              >
+              <th class="px-3 sm:px-6 py-3 sm:py-4 font-semibold border-b border-[#ebebeb] whitespace-nowrap text-center"
+                >This Platform</th
+              >
+              <th class="px-3 sm:px-6 py-3 sm:py-4 font-semibold border-b border-[#ebebeb] whitespace-nowrap text-center"
+                >Legacy Alternatives</th
+              >
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[#ebebeb]">
+            {
+              comparisonData.map((row) => (
+                <tr>
+                  <td class="px-3 sm:px-6 py-3 sm:py-4 font-sans text-xs sm:text-[13.5px] text-[#171717] font-medium">
+                    {row.feature}
+                  </td>
+                  <td class="px-3 sm:px-6 py-3 sm:py-4 font-sans text-xs sm:text-[13.5px] text-center">
+                    {typeof row.us === "boolean" ? (
+                      <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-blue-50 text-[#0070f3] border border-blue-200">
+                        <Check class="h-3.5 w-3.5" />
+                      </span>
+                    ) : (
+                      <span class="text-[#0070f3] font-semibold">{row.us}</span>
+                    )}
+                  </td>
+                  <td class="px-3 sm:px-6 py-3 sm:py-4 font-sans text-xs sm:text-[13.5px] text-[#888888] text-center">
+                    {typeof row.them === "boolean" ? (
+                      <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-rose-50 text-rose-500 border border-rose-200">
+                        <X class="h-3.5 w-3.5" />
+                      </span>
+                    ) : (
+                      <span>{row.them}</span>
+                    )}
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- User Segments Section -->
+  <section class="py-16 sm:py-20 bg-white border-t border-[#ebebeb]">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12 sm:mb-16">
+        <h2
+          class="font-mono text-xs font-semibold uppercase tracking-wider text-[#0070f3]"
+        >
+          Target Contexts
+        </h2>
+        <p
+          class="mt-3 font-sans text-xl sm:text-2xl md:text-4xl font-semibold tracking-[-1px] text-[#171717]"
+        >
+          Engineered for builders, architects, and designers.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <!-- Woodworkers -->
+        <a
+          href="/woodworking-angle-finder"
+          class="group flex flex-col justify-between p-4 sm:p-6 rounded-xl border border-[#ebebeb] bg-[#fafafa] hover:bg-white transition-colors"
+        >
+          <div>
+            <h3
+              class="font-sans text-base font-semibold text-[#171717]"
+            >
+              Woodworking & Joinery
+            </h3>
+          <p
+            class="mt-3 sm:mt-3.5 font-sans text-[13px] text-[#4d4d4d] leading-relaxed"
+          >
+              Verify custom miter cut values, compound angles, and trim
+              installations. Support polygon shapes like octagons and hexagons
+              in real time.
+            </p>
+          </div>
+          <span
+            class="mt-5 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase text-[#0070f3] group-hover:underline"
+          >
+            Joinery Guide <ArrowRight class="h-3 w-3" />
+          </span>
+        </a>
+
+        <!-- Roofers -->
+        <a
+          href="/roof-pitch-calculator"
+          class="group flex flex-col justify-between p-4 sm:p-6 rounded-xl border border-[#ebebeb] bg-[#fafafa] hover:bg-white transition-colors"
+        >
+          <div>
+            <h3
+              class="font-sans text-base font-semibold text-[#171717]"
+            >
+              Architectural Slopes
+            </h3>
+            <p
+              class="mt-3.5 font-sans text-[13px] text-[#4d4d4d] leading-relaxed"
+            >
+              Measure steepness, roof pitches, and stair grades directly from
+              pictures. Instantly convert slope degrees to standard pitch
+              ratios.
+            </p>
+          </div>
+          <span
+            class="mt-5 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase text-[#0070f3] group-hover:underline"
+          >
+            Slope Calc <ArrowRight class="h-3 w-3" />
+          </span>
+        </a>
+
+        <!-- Students -->
+        <div
+          class="flex flex-col justify-between p-4 sm:p-6 rounded-xl border border-[#ebebeb] bg-[#fafafa]"
+        >
+          <div>
+            <h3 class="font-sans text-base font-semibold text-[#171717]">
+              Academic Geometry
+            </h3>
+            <p
+              class="mt-3.5 font-sans text-[13px] text-[#4d4d4d] leading-relaxed"
+            >
+              Verify geometry formulas, math worksheets, and blueprint angles on
+              a clean browser-based digital grid.
+            </p>
+          </div>
+          <span
+            class="mt-5 font-mono text-[9px] uppercase text-[#888888] tracking-wider"
+            >No installation needed</span
+          >
+        </div>
+
+        <!-- DIY / Designers -->
+        <div
+          class="flex flex-col justify-between p-4 sm:p-6 rounded-xl border border-[#ebebeb] bg-[#fafafa]"
+        >
+          <div>
+            <h3 class="font-sans text-base font-semibold text-[#171717]">
+              Interior & CAD Drafting
+            </h3>
+            <p
+              class="mt-3.5 font-sans text-[13px] text-[#4d4d4d] leading-relaxed"
+            >
+              Plan room configurations, verify photographic grids, check
+              perspective lines, and inspect scale layouts from standard image
+              formats.
+            </p>
+          </div>
+          <span
+            class="mt-5 font-mono text-[9px] uppercase text-[#888888] tracking-wider"
+            >Runs offline locally</span
+          >
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Accordions -->
+  <section class="py-16 sm:py-20 bg-[#fafafa] border-t border-[#ebebeb]" id="faq">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-10 sm:mb-16">
+        <h2
+          class="font-mono text-xs font-semibold uppercase tracking-wider text-[#0070f3]"
+        >
+          Audit Information
+        </h2>
+        <p
+          class="mt-3 font-sans text-xl sm:text-2xl md:text-3xl font-semibold tracking-[-0.8px] text-[#171717]"
+        >
+          Frequently Asked Questions
+        </p>
+      </div>
+
+      <FAQ faqs={faqs} />
+    </div>
+  </section>
+</Layout>

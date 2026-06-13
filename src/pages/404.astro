@@ -1,0 +1,110 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { Home, Compass } from "@lucide/astro";
+---
+
+<Layout
+  title="404 — Page Not Found | Online Angle Finder"
+  description="The page you're looking for doesn't exist. Return to the Online Angle Finder homepage to measure angles from photos and webcam."
+>
+  <section class="relative flex flex-col items-center justify-center py-28 sm:py-36 lg:py-44 overflow-hidden">
+
+    <!-- Animated Protractor Illustration -->
+    <div class="relative mb-10 select-none" aria-hidden="true">
+      <div class="error-protractor-ring">
+        <svg viewBox="0 0 200 200" class="h-44 w-44 sm:h-52 sm:w-52" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Outer circle -->
+          <circle cx="100" cy="100" r="90" stroke="currentColor" stroke-width="1" class="text-[#d4d4d4] dark:text-white/10" />
+          <circle cx="100" cy="100" r="80" stroke="currentColor" stroke-width="0.5" class="text-[#e5e5e5] dark:text-white/5" stroke-dasharray="4 4" />
+
+          <!-- Degree ticks -->
+          {Array.from({ length: 36 }).map((_, i) => {
+            const angle = i * 10;
+            const rad = (angle * Math.PI) / 180;
+            const x1 = 100 + 85 * Math.cos(rad);
+            const y1 = 100 + 85 * Math.sin(rad);
+            const x2 = 100 + 90 * Math.cos(rad);
+            const y2 = 100 + 90 * Math.sin(rad);
+            return (
+              <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="currentColor" stroke-width={i % 9 === 0 ? "2" : "1"} class={i % 9 === 0 ? "text-[#171717] dark:text-white/60" : "text-[#d4d4d4] dark:text-white/15"} />
+            );
+          })}
+
+          <!-- Center dot -->
+          <circle cx="100" cy="100" r="3" class="fill-[#171717] dark:fill-white/60" />
+
+          <!-- Needle -->
+          <line x1="100" y1="100" x2={100 + 70 * Math.cos((44 * Math.PI) / 180)} y2={100 + 70 * Math.sin((44 * Math.PI) / 180)} stroke="#171717" stroke-width="2" stroke-linecap="round" class="error-needle dark:stroke-white/50" />
+          <line x1="100" y1="100" x2={100 + 70 * Math.cos((224 * Math.PI) / 180)} y2={100 + 70 * Math.sin((224 * Math.PI) / 180)} stroke="#a1a1a1" stroke-width="1.5" stroke-linecap="round" opacity="0.3" class="error-needle-ghost" />
+        </svg>
+      </div>
+
+      <!-- Floating 404 over the protractor -->
+      <div class="absolute inset-0 flex items-center justify-center">
+        <span class="font-mono text-5xl sm:text-6xl font-black text-[#171717] tracking-tighter">
+          404
+        </span>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="text-center px-6 max-w-lg">
+      <h1 class="font-sans text-2xl sm:text-3xl font-bold tracking-tight text-[#171717]">
+        Angle Not Found
+      </h1>
+      <p class="mt-4 font-sans text-sm sm:text-base text-[#888888] leading-relaxed">
+        This page has rotated out of range. The URL you requested doesn't exist
+        or may have been moved to a different bearing.
+      </p>
+
+      <!-- Action buttons -->
+      <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+        <a
+          href="/"
+          class="w-full sm:w-auto inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#171717] hover:bg-[#27272a] px-7 font-sans text-sm font-semibold text-white shadow-vercel-3 transition-all hover:scale-[1.02] active:scale-[0.98]"
+        >
+          <Home class="h-4 w-4" />
+          Back to Home
+        </a>
+        <a
+          href="/tool/image"
+          class="w-full sm:w-auto inline-flex h-11 items-center justify-center gap-2 rounded-full border border-[#ebebeb] bg-white hover:bg-[#fafafa] px-7 font-sans text-sm font-semibold text-[#171717] shadow-vercel-2 transition-all hover:scale-[1.02] active:scale-[0.98]"
+        >
+          <Compass class="h-4 w-4 text-[#171717]" />
+          Open Angle Finder
+        </a>
+      </div>
+
+      <!-- Error code hint -->
+      <p class="mt-8 font-mono text-[11px] text-[#a1a1a1] uppercase tracking-wider">
+        Error Code: 404 · Page Not Found
+      </p>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .error-protractor-ring {
+    animation: slow-rotate 60s linear infinite;
+  }
+
+  .error-needle {
+    transform-origin: center;
+    animation: needle-wobble 4s ease-in-out infinite;
+  }
+
+  .error-needle-ghost {
+    transform-origin: center;
+    animation: needle-wobble 4s ease-in-out infinite reverse;
+  }
+
+  @keyframes slow-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes needle-wobble {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+</style>

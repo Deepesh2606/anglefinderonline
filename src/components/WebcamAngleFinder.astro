@@ -1,0 +1,1130 @@
+---
+import { Camera, Copy, Play, Square, VideoOff, RefreshCw, Layers, Sliders, Info } from '@lucide/astro';
+---
+
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-4 lg:gap-6 max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 w-full">
+  <!-- Left Side: Interactive Webcam Container -->
+  <div class="lg:col-span-3 flex flex-col items-center justify-center bg-white border border-hairline rounded-xl p-4 sm:p-6 shadow-vercel-3 min-h-[400px] sm:min-h-[500px]">
+    
+    <!-- Permission Request/Initial State -->
+    <div id="camera-onboarding" class="w-full flex-grow flex flex-col items-center justify-center p-10 text-center">
+      <div class="flex h-14 w-14 items-center justify-center rounded-full bg-canvas-soft shadow-vercel-1 mb-4">
+        <Camera class="h-7 w-7 text-ink" />
+      </div>
+      <h3 class="font-sans text-lg font-semibold text-ink">Access Live Webcam</h3>
+      <p class="mt-1.5 max-w-sm font-sans text-sm text-body leading-relaxed">
+        Measure real-world angles in real-time. We require camera access to display a video feed. All processing happens locally in your browser.
+      </p>
+      <button id="start-camera-btn" class="mt-6 inline-flex h-10 items-center justify-center rounded-full bg-primary dark:bg-white px-6 font-sans text-sm font-medium text-white dark:text-[#0D1117] hover:bg-black/90 dark:hover:bg-slate-100 shadow-vercel-2 transition">
+        Enable Camera
+      </button>
+    </div>
+
+    <!-- Active Camera Layout -->
+    <div id="camera-workspace" class="hidden relative w-full flex-col items-center justify-center w-full">
+      <div class="relative w-full max-h-[400px] sm:max-h-[600px] overflow-hidden rounded-lg bg-black dark:bg-[#080B10] shadow-vercel-2 flex items-center justify-center select-none" id="camera-container">
+        
+        <!-- Live Video element -->
+      <video id="webcam-video" autoplay playsinline class="w-full h-auto max-h-[400px] sm:max-h-[600px] object-contain transform-none" style="transform-origin: center center;"></video>
+        
+        <!-- Frozen Snapshot Overlay (hidden by default) -->
+        <img id="frozen-overlay" src="" alt="Frozen frame" class="hidden absolute inset-0 w-full h-full object-contain pointer-events-none" />
+
+        <!-- Draggable Protractor SVG Overlay -->
+        <svg id="webcam-svg-overlay" class="absolute inset-0 w-full h-full cursor-default select-none pointer-events-auto">
+          <!-- 360° Circular Protractor Guide -->
+          <g id="w-protractor-guide" fill="none" class="pointer-events-none"></g>
+
+          <!-- Double layer vector lines for contrast -->
+          <line id="w-line-a-bg" x1="0" y1="0" x2="0" y2="0" stroke="#ffffff" stroke-width="6.5" stroke-linecap="round" />
+          <line id="w-line-a" x1="0" y1="0" x2="0" y2="0" stroke="#0070f3" stroke-width="3" stroke-linecap="round" />
+          
+          <line id="w-line-b-bg" x1="0" y1="0" x2="0" y2="0" stroke="#ffffff" stroke-width="6.5" stroke-linecap="round" />
+          <line id="w-line-b" x1="0" y1="0" x2="0" y2="0" stroke="#0070f3" stroke-width="3" stroke-linecap="round" />
+          
+          <!-- Angle Arc -->
+          <path id="w-angle-arc" d="" fill="rgba(0, 112, 243, 0.15)" stroke="#0070f3" stroke-width="1.5" />
+          
+          <!-- Draggable Handles with Backings -->
+          <g class="cursor-pointer" id="w-handle-v-group">
+            <circle id="w-handle-v-bg" cx="0" cy="0" r="15" fill="#171717" />
+            <circle id="w-handle-v" cx="0" cy="0" r="11" fill="#ffffff" stroke="#171717" stroke-width="2" class="shadow-vercel-3" />
+            <text id="w-label-v" x="0" y="0" fill="#171717" font-weight="700" font-family="var(--font-mono)" font-size="9" text-anchor="middle" dominant-baseline="middle" pointer-events="none">V</text>
+          </g>
+          
+          <g class="cursor-pointer" id="w-handle-a-group">
+            <circle id="w-handle-a-bg" cx="0" cy="0" r="14" fill="#171717" />
+            <circle id="w-handle-a" cx="0" cy="0" r="11" fill="#ffffff" stroke="#6366f1" stroke-width="2" class="shadow-vercel-2" />
+            <text id="w-label-a" x="0" y="0" fill="#6366f1" font-weight="700" font-family="var(--font-mono)" font-size="9" text-anchor="middle" dominant-baseline="middle" pointer-events="none">A</text>
+          </g>
+          
+          <g class="cursor-pointer" id="w-handle-b-group">
+            <circle id="w-handle-b-bg" cx="0" cy="0" r="14" fill="#171717" />
+            <circle id="w-handle-b" cx="0" cy="0" r="11" fill="#ffffff" stroke="#6366f1" stroke-width="2" class="shadow-vercel-2" />
+            <text id="w-label-b" x="0" y="0" fill="#6366f1" font-weight="700" font-family="var(--font-mono)" font-size="9" text-anchor="middle" dominant-baseline="middle" pointer-events="none">B</text>
+          </g>
+
+          <!-- Floating Angle Text -->
+          <g id="w-floating-label">
+            <rect id="w-floating-bg" x="0" y="0" width="56" height="22" rx="4" fill="#171717" class="shadow-vercel-2" />
+            <text id="w-floating-text" x="0" y="0" fill="#ffffff" font-family="var(--font-mono)" font-size="11" font-weight="500" text-anchor="middle" dominant-baseline="middle">0.0°</text>
+          </g>
+        </svg>
+      </div>
+
+    <!-- Mobile Rotation Note -->
+    <div id="w-mobile-rotation-note" class="text-center text-xs text-neutral-400 mt-3 font-medium md:hidden">
+      Rotate to landscape for better precision
+    </div>
+
+      <!-- Controls below video -->
+      <div class="mt-3 sm:mt-4 flex flex-wrap gap-2 w-full justify-between items-center border-t border-hairline pt-3 sm:pt-4">
+        <div class="flex items-center gap-2 flex-wrap">
+          <!-- Freeze Toggle -->
+          <button id="freeze-btn" class="inline-flex h-9 items-center gap-1.5 rounded-full bg-primary dark:bg-white px-3 sm:px-4 font-sans text-xs font-semibold text-white dark:text-[#0D1117] hover:bg-black/90 dark:hover:bg-slate-100 transition shadow-vercel-2 whitespace-nowrap">
+            <Square class="h-3.5 w-3.5 fill-white stroke-white" />
+            Freeze Frame
+          </button>
+          
+          <button id="stop-camera-btn" class="inline-flex h-9 items-center gap-1.5 rounded-full border border-hairline bg-white px-3 sm:px-4 font-sans text-xs text-body hover:text-ink hover:bg-canvas-soft transition shadow-vercel-1 whitespace-nowrap">
+            <VideoOff class="h-3.5 w-3.5" />
+            Stop Camera
+          </button>
+        </div>
+        
+        <!-- Camera Selector -->
+        <div class="flex items-center gap-2">
+          <label for="camera-select" class="font-sans text-xs text-mute hidden md:inline">Source:</label>
+          <select id="camera-select" class="font-sans text-xs border border-hairline rounded-md bg-white px-2.5 py-1.5 text-body focus:outline-none focus:ring-1 focus:ring-primary max-w-[180px]">
+            <option value="">Detecting cameras...</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Side: Sidebar Controls (2-column grid next to webcam on desktop) -->
+  <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full content-start">
+    <!-- Main Readout Card -->
+    <div class="bg-white border border-hairline rounded-xl p-4 sm:p-5 shadow-vercel-3 flex flex-col justify-between min-h-[180px] sm:min-h-[190px]">
+      <div class="flex flex-col">
+        <span class="font-mono text-[10px] uppercase tracking-wider text-mute">Calculated Angle</span>
+        <h2 class="font-sans text-5xl font-semibold tracking-[-2px] text-ink mt-1 flex items-baseline gap-1" id="w-angle-display">
+          <span>0.0</span><span class="text-3xl text-mute">°</span>
+        </h2>
+      </div>
+      
+        <div class="flex flex-col gap-2 w-full mt-3">
+        <button id="w-copy-btn" class="w-full inline-flex h-9 items-center justify-center gap-2 rounded-full bg-primary dark:bg-white font-sans text-xs font-medium text-white dark:text-[#0D1117] shadow-vercel-2 hover:bg-black/90 dark:hover:bg-slate-100 transition">
+          <Copy class="h-3.5 w-3.5" />
+          Copy Result
+        </button>
+        <div class="flex gap-2 items-center flex-wrap">
+          <button id="w-reset-points-btn" class="inline-flex h-9 items-center justify-center gap-2 rounded-full border border-[#171717] dark:border-white bg-[#171717] dark:bg-white px-3 sm:px-4 font-sans text-xs font-medium text-white dark:text-[#0D1117] shadow-vercel-2 hover:opacity-95 dark:hover:bg-slate-100 transition whitespace-nowrap">Reset</button>
+          <button id="w-decrement" class="inline-flex h-9 px-2 sm:px-3 items-center justify-center rounded-full border border-[#171717] bg-white font-sans text-sm font-medium text-[#171717] hover:bg-[#171717] hover:text-white transition shadow-sm" aria-label="Decrease selected handle by 1 degree">-1°</button>
+          <button id="w-increment" class="inline-flex h-9 px-2 sm:px-3 items-center justify-center rounded-full border border-[#171717] bg-white font-sans text-sm font-medium text-[#171717] hover:bg-[#171717] hover:text-white transition shadow-sm" aria-label="Increase selected handle by 1 degree">+1°</button>
+          <div class="flex-1"></div>
+          <div class="flex gap-2">
+            <button id="w-select-a" class="inline-flex h-9 w-10 sm:w-auto items-center justify-center gap-1.5 rounded-full border border-[#171717] bg-[#171717] font-sans text-xs font-semibold text-white transition shadow-vercel-2">A</button>
+            <button id="w-select-b" class="inline-flex h-9 w-10 sm:w-auto items-center justify-center gap-1.5 rounded-full border border-hairline bg-white font-sans text-xs font-semibold text-body transition shadow-vercel-1">B</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Geometry breakdown card -->
+    <div class="bg-white border border-hairline rounded-xl p-4 sm:p-5 shadow-vercel-2 flex flex-col justify-between min-h-[180px] sm:min-h-[190px]">
+      <div class="flex items-center gap-1.5 border-b border-hairline pb-2">
+        <Layers class="h-4 w-4 text-mute" />
+        <h3 class="font-mono text-[11px] font-semibold uppercase tracking-wider text-ink">Complementary & Supplementary</h3>
+      </div>
+      
+      <div class="grid grid-cols-2 gap-3 pb-2">
+        <div class="flex flex-col border-r border-hairline pr-2">
+          <span class="font-mono text-[9px] uppercase tracking-wider text-mute">Complementary</span>
+          <span class="font-sans text-base font-semibold text-ink mt-0.5" id="w-comp-display">90.0°</span>
+          <span class="font-mono text-[9px] text-mute mt-0.5">90° - θ</span>
+        </div>
+        <div class="flex flex-col pl-1.5">
+          <span class="font-mono text-[9px] uppercase tracking-wider text-mute">Supplementary</span>
+          <span class="font-sans text-base font-semibold text-ink mt-0.5" id="w-supp-display">180.0°</span>
+          <span class="font-mono text-[9px] text-mute mt-0.5">180° - θ</span>
+        </div>
+      </div>
+      
+      <div class="text-[9px] text-mute font-sans border-t border-hairline pt-2">
+        Calculations are automatic relative to lines positioning.
+      </div>
+    </div>
+
+    <!-- Settings Card -->
+    <div class="bg-white border border-hairline rounded-xl p-4 sm:p-5 shadow-vercel-2 flex flex-col gap-3 min-h-[180px] sm:min-h-[190px]">
+      <div class="flex items-center gap-1.5 border-b border-hairline pb-2">
+        <Sliders class="h-4 w-4 text-mute" />
+        <h3 class="font-mono text-[11px] font-semibold uppercase tracking-wider text-ink">Visual Settings</h3>
+      </div>
+
+      <div class="flex flex-col gap-2.5">
+        <!-- Color Selector -->
+        <div class="flex justify-between items-center">
+          <label class="font-sans text-xs font-semibold text-body">Overlay Color</label>
+          <div class="flex gap-2">
+            <button class="w-5 h-5 rounded-full bg-[#6366f1] border-2 border-white ring-2 ring-primary cursor-pointer transition-all" data-color="#6366f1" aria-label="Indigo"></button>
+            <button class="w-5 h-5 rounded-full bg-[#ee0000] border-2 border-white ring-0 ring-transparent cursor-pointer transition-all" data-color="#ee0000" aria-label="Red"></button>
+            <button class="w-5 h-5 rounded-full bg-[#171717] dark:bg-white border-2 border-white ring-0 ring-transparent cursor-pointer transition-all" data-color="#171717" data-dark-color="#ffffff" aria-label="Black"></button>
+          </div>
+        </div>
+
+        <!-- Thickness Selector -->
+        <div class="flex justify-between items-center border-t border-hairline pt-2">
+          <label class="font-sans text-xs font-semibold text-body">Thickness</label>
+          <div class="flex items-center gap-2">
+            <input type="range" id="w-thickness-slider" min="1" max="8" value="3" class="w-20 accent-primary cursor-pointer h-1" />
+            <span class="font-mono text-[10px] text-mute" id="w-thickness-val">3px</span>
+          </div>
+        </div>
+
+        <!-- Snap Step Options -->
+        <div class="flex items-center justify-between border-t border-hairline pt-2">
+          <label class="font-sans text-xs font-semibold text-body">Snap</label>
+          <div class="flex gap-1" id="w-snap-options">
+            <button class="px-2 py-0.5 rounded-full font-mono text-[10px] font-semibold border border-hairline bg-white text-mute hover:text-ink transition" data-snap="0.1">0.1°</button>
+            <button class="px-2 py-0.5 rounded-full font-mono text-[10px] font-semibold border border-[#171717] bg-[#171717] text-white transition" data-snap="1">1°</button>
+            <button class="px-2 py-0.5 rounded-full font-mono text-[10px] font-semibold border border-hairline bg-white text-mute hover:text-ink transition" data-snap="5">5°</button>
+            <button class="px-2 py-0.5 rounded-full font-mono text-[10px] font-semibold border border-hairline bg-white text-mute hover:text-ink transition" data-snap="10">10°</button>
+            <button class="px-2 py-0.5 rounded-full font-mono text-[10px] font-semibold border border-hairline bg-white text-mute hover:text-ink transition" data-snap="30">30°</button>
+          </div>
+        </div>
+
+        <!-- 360° Circular Protractor Guide Toggle -->
+        <div class="flex items-center justify-between border-t border-hairline pt-2">
+          <label for="w-guide-toggle" class="font-sans text-xs font-semibold text-body">360° Guide Grid</label>
+          <input type="checkbox" id="w-guide-toggle" checked class="w-4 h-4 accent-primary rounded cursor-pointer" />
+        </div>
+
+        <!-- Label Mode Toggle -->
+        <div class="flex items-center justify-between border-t border-hairline pt-2">
+          <label for="w-toggle-label-ab" class="font-sans text-xs font-semibold text-body">Use A / B Labels</label>
+          <input type="checkbox" id="w-toggle-label-ab" checked class="w-4 h-4 accent-primary rounded cursor-pointer" />
+        </div>
+
+        <!-- Lock Center Toggle -->
+        <div class="flex items-center justify-between border-t border-hairline pt-2">
+          <label for="w-lock-center-toggle" class="font-sans text-xs font-semibold text-body">Lock Center Pivot</label>
+          <input type="checkbox" id="w-lock-center-toggle" checked class="w-4 h-4 accent-primary rounded cursor-pointer" />
+        </div>
+
+        <!-- Fixed Arm Length Toggle -->
+        <div class="flex items-center justify-between border-t border-hairline pt-2">
+          <label for="w-fixed-length-toggle" class="font-sans text-xs font-semibold text-body">Fixed Arm Length</label>
+          <input type="checkbox" id="w-fixed-length-toggle" checked class="w-4 h-4 accent-primary rounded cursor-pointer" />
+        </div>
+
+        <!-- Gear Dial Mode Toggle -->
+        <div class="flex items-center justify-between border-t border-hairline pt-2">
+          <label for="w-link-handles-toggle" class="font-sans text-xs font-semibold text-body">Gear Dial Mode</label>
+          <input type="checkbox" id="w-link-handles-toggle" class="w-4 h-4 accent-primary rounded cursor-pointer" />
+        </div>
+
+        <!-- Sound Feedback Toggle -->
+        <div class="flex items-center justify-between border-t border-hairline pt-2">
+          <label class="font-sans text-xs font-semibold text-body">Sound Feedback</label>
+          <button id="w-toggle-sound" class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-[#171717] transition-colors duration-200 focus:outline-none" role="switch" aria-checked="true">
+            <span id="w-toggle-sound-dot" class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 translate-x-4"></span>
+          </button>
+        </div>
+
+        <!-- Reverse Sound Toggle -->
+        <div class="flex items-center justify-between border-t border-hairline pt-2">
+          <label class="font-sans text-xs font-semibold text-body">Reverse Sound</label>
+          <button id="w-toggle-reverse-sound" class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-[#ebebeb] transition-colors duration-200 focus:outline-none" role="switch" aria-checked="false">
+            <span id="w-toggle-reverse-sound-dot" class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 translate-x-0"></span>
+          </button>
+        </div>
+
+        <!-- Play Twice Toggle -->
+        <div class="flex items-center justify-between border-t border-hairline pt-2">
+          <label class="font-sans text-xs font-semibold text-body">Play Twice</label>
+          <button id="w-toggle-double-sound" class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-[#ebebeb] transition-colors duration-200 focus:outline-none" role="switch" aria-checked="false">
+            <span id="w-toggle-double-sound-dot" class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 translate-x-0"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Help Card -->
+    <div class="bg-canvas-soft border border-hairline rounded-xl p-4 sm:p-5 shadow-vercel-2 flex flex-col justify-between min-h-[180px] sm:min-h-[190px]">
+      <div class="flex gap-2">
+        <Info class="h-4.5 w-4.5 shrink-0 text-mute mt-0.5" />
+        <div class="flex flex-col gap-1 text-left">
+          <h4 class="font-sans text-xs font-semibold text-ink font-semibold">Webcam Tip:</h4>
+          <p class="font-sans text-[11.5px] text-body leading-relaxed">
+            Position your camera in front of the angle, hit <strong class="text-ink">Freeze Frame</strong> to capture a stable snapshot, then drag the handles to measure!
+          </p>
+        </div>
+      </div>
+      
+      <div class="text-[9px] text-mute font-sans border-t border-hairline pt-2 mt-4 text-left">
+        All processing is fully local. No camera streams are ever transmitted to any remote servers.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden Canvas for capturing frozen frame -->
+<canvas id="screenshot-canvas" class="hidden"></canvas>
+
+<!-- Interactive Logic -->
+<script>
+  const onboarding = document.getElementById('camera-onboarding');
+  const cameraWorkspace = document.getElementById('camera-workspace');
+  const startCameraBtn = document.getElementById('start-camera-btn');
+  const stopCameraBtn = document.getElementById('stop-camera-btn');
+  const freezeBtn = document.getElementById('freeze-btn');
+  const video = document.getElementById('webcam-video') as HTMLVideoElement;
+  const frozenOverlay = document.getElementById('frozen-overlay') as HTMLImageElement;
+  const cameraSelect = document.getElementById('camera-select') as HTMLSelectElement;
+  const svgOverlay = document.getElementById('webcam-svg-overlay') as HTMLElement;
+  const cameraContainer = document.getElementById('camera-container');
+
+  const angleDisplay = document.getElementById('w-angle-display')?.querySelector('span');
+  const compDisplay = document.getElementById('w-comp-display');
+  const suppDisplay = document.getElementById('w-supp-display');
+
+  const lineA = document.getElementById('w-line-a');
+  const lineABg = document.getElementById('w-line-a-bg');
+  const lineB = document.getElementById('w-line-b');
+  const lineBBg = document.getElementById('w-line-b-bg');
+  const angleArc = document.getElementById('w-angle-arc');
+  
+  const handleV = document.getElementById('w-handle-v');
+  const handleVBg = document.getElementById('w-handle-v-bg');
+  const handleA = document.getElementById('w-handle-a');
+  const handleABg = document.getElementById('w-handle-a-bg');
+  const handleB = document.getElementById('w-handle-b');
+  const handleBBg = document.getElementById('w-handle-b-bg');
+  
+  const handleVGroup = document.getElementById('w-handle-v-group');
+  const handleAGroup = document.getElementById('w-handle-a-group');
+  const handleBGroup = document.getElementById('w-handle-b-group');
+  const labelV = document.getElementById('w-label-v');
+  const labelA = document.getElementById('w-label-a');
+  const labelB = document.getElementById('w-label-b');
+  const floatingLabel = document.getElementById('w-floating-label');
+  const floatingBg = document.getElementById('w-floating-bg');
+  const floatingText = document.getElementById('w-floating-text');
+
+  const copyBtn = document.getElementById('w-copy-btn');
+  const resetPointsBtn = document.getElementById('w-reset-points-btn');
+  const thicknessSlider = document.getElementById('w-thickness-slider') as HTMLInputElement;
+  const thicknessVal = document.getElementById('w-thickness-val');
+  const colorButtons = document.querySelectorAll('[data-color]');
+  const lockCenterToggle = document.getElementById('w-lock-center-toggle') as HTMLInputElement | null;
+  const linkHandlesToggle = document.getElementById('w-link-handles-toggle') as HTMLInputElement | null;
+  const wToggleLabelAB = document.getElementById('w-toggle-label-ab') as HTMLInputElement | null;
+
+  let stream: MediaStream | null = null;
+  let isFrozen = false;
+  let activeHandle: string | null = null;
+  let activeColor = '#6366f1';
+  let activeThickness = 3;
+  let currentAngle = 0;
+
+  let isCenterLocked = true;
+  let isHandlesLinked = false;
+  let wActiveLine: 'A' | 'B' = 'A';
+
+  // Web Audio Context & Synthesizer variables for gear ticks
+  let audioCtx: AudioContext | null = null;
+  let lastClickAngle = -1;
+  let gearRotation = 0;
+  let isSoundEnabled = true;
+  let isReverseSound = false;
+  let isPlayTwice = false;
+
+  // Normalized % coordinates (0-100)
+  let ptV = { x: 50, y: 60 };
+  let ptA = { x: 35, y: 35 };
+  let ptB = { x: 65, y: 35 };
+
+  let armLengthA = Math.sqrt(Math.pow(ptA.x - ptV.x, 2) + Math.pow(ptA.y - ptV.y, 2));
+  let armLengthB = Math.sqrt(Math.pow(ptB.x - ptV.x, 2) + Math.pow(ptB.y - ptV.y, 2));
+  let wSnapStep = 1.0;
+  // magnet snapping to 30° multiples when moving gears
+  let wMagnetThreshold = 4; // degrees
+
+  function playClickSound() {
+    if (!isSoundEnabled) return;
+    try {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      const playOnce = (reverse = false) => {
+        try {
+          const now = audioCtx!.currentTime;
+          const osc = audioCtx!.createOscillator();
+          const gain = audioCtx!.createGain();
+          osc.type = 'sine';
+          if (!reverse) {
+            osc.frequency.setValueAtTime(700, now);
+            osc.frequency.exponentialRampToValueAtTime(150, now + 0.01);
+          } else {
+            osc.frequency.setValueAtTime(150, now);
+            osc.frequency.exponentialRampToValueAtTime(700, now + 0.01);
+          }
+
+          gain.gain.setValueAtTime(0.008, now);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.01);
+
+          osc.connect(gain);
+          gain.connect(audioCtx!.destination);
+          osc.start(now);
+          osc.stop(now + 0.01);
+        } catch (e) {
+          // ignore
+        }
+      };
+
+      playOnce(isReverseSound);
+      if (isPlayTwice) setTimeout(() => playOnce(isReverseSound), 60);
+    } catch (e) {
+      // AudioContext blocks/issues ignored
+    }
+  }
+
+  // ----------------------------------------------------
+  // Camera Stream Management
+  // ----------------------------------------------------
+  startCameraBtn?.addEventListener('click', startCamera);
+  stopCameraBtn?.addEventListener('click', stopCamera);
+  cameraSelect?.addEventListener('change', () => {
+    if (stream) {
+      stopCamera();
+      startCamera();
+    }
+  });
+
+  async function startCamera() {
+    try {
+      const constraints: MediaStreamConstraints = {
+        video: {
+          facingMode: 'environment', // default to back camera
+        }
+      };
+
+      if (cameraSelect.value) {
+        constraints.video = {
+          deviceId: { exact: cameraSelect.value }
+        };
+      }
+
+      stream = await navigator.mediaDevices.getUserMedia(constraints);
+      video.srcObject = stream;
+      
+      onboarding?.classList.add('hidden');
+      cameraWorkspace?.classList.remove('hidden');
+
+      await populateCameraList();
+      
+      video.onloadedmetadata = () => {
+        const track = stream?.getVideoTracks()[0];
+        if (track) {
+          const settings = track.getSettings();
+          console.log('Video settings:', settings);
+          const label = track.label?.toLowerCase() || '';
+          const isFront = settings.facingMode === 'user' || label.includes('front') || label.includes('selfie') || label.includes('user');
+          if (isFront) {
+            video.style.transform = 'scaleX(-1)';
+          } else {
+            video.style.transform = 'none';
+          }
+        }
+        setTimeout(updateOverlay, 100);
+      };
+    } catch (err) {
+      console.error('Error accessing webcam:', err);
+      alert('Could not access webcam. Please check permissions in your browser settings.');
+    }
+  }
+
+  function stopCamera() {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      stream = null;
+    }
+    video.srcObject = null;
+    video.style.transform = 'none';
+    isFrozen = false;
+    frozenOverlay.classList.add('hidden');
+    frozenOverlay.src = '';
+    
+    if (freezeBtn) {
+      freezeBtn.innerHTML = `
+        <svg class="h-3.5 w-3.5 fill-white stroke-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+        Freeze Frame`;
+    }
+
+    cameraWorkspace?.classList.add('hidden');
+    onboarding?.classList.remove('hidden');
+  }
+
+  async function populateCameraList() {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(d => d.kind === 'videoinput');
+      
+      const currentSelected = cameraSelect.value;
+      cameraSelect.innerHTML = '';
+      
+      videoDevices.forEach((device, index) => {
+        const option = document.createElement('option');
+        option.value = device.deviceId;
+        option.text = device.label || `Camera ${index + 1}`;
+        if (device.deviceId === currentSelected) {
+          option.selected = true;
+        }
+        cameraSelect.appendChild(option);
+      });
+    } catch (err) {
+      console.warn('Could not enumerate cameras:', err);
+    }
+  }
+
+  // ----------------------------------------------------
+  // Freeze Frame Snapshot Logic
+  // ----------------------------------------------------
+  freezeBtn?.addEventListener('click', () => {
+    if (!stream) return;
+
+    if (!isFrozen) {
+      const canvas = document.getElementById('screenshot-canvas') as HTMLCanvasElement;
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      
+      const isMirrored = video.style.transform.includes('scaleX(-1)');
+      if (isMirrored) {
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
+      }
+      
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      if (isMirrored) {
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+      }
+
+      frozenOverlay.src = canvas.toDataURL('image/png');
+      frozenOverlay.classList.remove('hidden');
+      
+      video.pause();
+      isFrozen = true;
+
+      freezeBtn.innerHTML = `
+        <svg class="h-3.5 w-3.5 fill-white stroke-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Live Video`;
+    } else {
+      frozenOverlay.classList.add('hidden');
+      frozenOverlay.src = '';
+      video.play().catch(console.error);
+      isFrozen = false;
+
+      freezeBtn.innerHTML = `
+        <svg class="h-3.5 w-3.5 fill-white stroke-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+        Freeze Frame`;
+    }
+  });
+
+  // ----------------------------------------------------
+  // Coordinate Mapping
+  // ----------------------------------------------------
+  function alignSvgOverlay() {
+    if (!video || !cameraContainer || !svgOverlay) return;
+    const rect = video.getBoundingClientRect();
+    const containerRect = cameraContainer.getBoundingClientRect();
+    
+    if (rect.width > 0) {
+      svgOverlay.style.left = `${rect.left - containerRect.left}px`;
+      svgOverlay.style.top = `${rect.top - containerRect.top}px`;
+      svgOverlay.style.width = `${rect.width}px`;
+      svgOverlay.style.height = `${rect.height}px`;
+    }
+  }
+
+  function getPixelCoords(pt: { x: number; y: number }) {
+    const rect = video.getBoundingClientRect();
+    const isMirrored = video.style.transform.includes('scaleX(-1)');
+    return {
+      x: isMirrored ? rect.width - (pt.x / 100) * rect.width : (pt.x / 100) * rect.width,
+      y: (pt.y / 100) * rect.height
+    };
+  }
+
+  function getNormalizedCoords(clientX: number, clientY: number) {
+    const rect = video.getBoundingClientRect();
+    const isMirrored = video.style.transform.includes('scaleX(-1)');
+    let x = ((clientX - rect.left) / rect.width) * 100;
+    if (isMirrored) {
+      x = 100 - x;
+    }
+    let y = ((clientY - rect.top) / rect.height) * 100;
+    
+    x = Math.max(0, Math.min(100, x));
+    y = Math.max(0, Math.min(100, y));
+    
+    return { x, y };
+  }
+
+  // ----------------------------------------------------
+  // Rendering and Calculations
+  // ----------------------------------------------------
+  function updateOverlay() {
+    if (!cameraWorkspace || cameraWorkspace.classList.contains('hidden')) return;
+
+    alignSvgOverlay();
+
+    const isDarkTheme = document.documentElement.classList.contains('dark');
+    let resolvedColor = activeColor;
+    if (activeColor === '#171717' || activeColor === '#ffffff') {
+      resolvedColor = isDarkTheme ? '#ffffff' : '#171717';
+    }
+
+    const v = getPixelCoords(ptV);
+    const a = getPixelCoords(ptA);
+    const b = getPixelCoords(ptB);
+
+    // Keep handle labels ordered left -> right as A then B when A/B mode enabled
+    const useWAB = wToggleLabelAB ? wToggleLabelAB.checked : false;
+    if (labelA && labelB) {
+      if (a.x <= b.x) {
+        labelA.textContent = useWAB ? 'A' : labelA.textContent;
+        labelB.textContent = useWAB ? 'B' : labelB.textContent;
+      } else {
+        labelA.textContent = useWAB ? 'B' : labelA.textContent;
+        labelB.textContent = useWAB ? 'A' : labelB.textContent;
+      }
+    }
+
+    // Update white outline backing lines
+    if (lineABg) {
+      lineABg.setAttribute('x1', String(v.x));
+      lineABg.setAttribute('y1', String(v.y));
+      lineABg.setAttribute('x2', String(a.x));
+      lineABg.setAttribute('y2', String(a.y));
+      lineABg.setAttribute('stroke', '#ffffff');
+      lineABg.setAttribute('stroke-width', String(activeThickness + 3));
+    }
+    if (lineBBg) {
+      lineBBg.setAttribute('x1', String(v.x));
+      lineBBg.setAttribute('y1', String(v.y));
+      lineBBg.setAttribute('x2', String(b.x));
+      lineBBg.setAttribute('y2', String(b.y));
+      lineBBg.setAttribute('stroke', '#ffffff');
+      lineBBg.setAttribute('stroke-width', String(activeThickness + 3));
+    }
+
+    // Foreground lines
+    if (lineA) {
+      lineA.setAttribute('x1', String(v.x));
+      lineA.setAttribute('y1', String(v.y));
+      lineA.setAttribute('x2', String(a.x));
+      lineA.setAttribute('y2', String(a.y));
+      lineA.setAttribute('stroke', resolvedColor);
+      lineA.setAttribute('stroke-width', String(activeThickness));
+    }
+    if (lineB) {
+      lineB.setAttribute('x1', String(v.x));
+      lineB.setAttribute('y1', String(v.y));
+      lineB.setAttribute('x2', String(b.x));
+      lineB.setAttribute('y2', String(b.y));
+      lineB.setAttribute('stroke', resolvedColor);
+      lineB.setAttribute('stroke-width', String(activeThickness));
+    }
+
+    // Handles backgrounds (shadows)
+    setHandlePos(handleVBg, null, null, v.x, v.y);
+    setHandlePos(handleABg, null, null, a.x, a.y);
+    setHandlePos(handleBBg, null, null, b.x, b.y);
+
+    // Handles foregrounds
+    setHandlePos(handleV, labelV, handleVGroup, v.x, v.y);
+    setHandlePos(handleA, labelA, handleAGroup, a.x, a.y);
+    setHandlePos(handleB, labelB, handleBGroup, b.x, b.y);
+
+    // Apply color-coded target colors dynamically
+    if (handleA) handleA.setAttribute('stroke', resolvedColor);
+    if (labelA) labelA.setAttribute('fill', resolvedColor);
+    if (handleB) handleB.setAttribute('stroke', resolvedColor);
+    if (labelB) labelB.setAttribute('fill', resolvedColor);
+    if (handleV) handleV.setAttribute('stroke', isDarkTheme ? '#ffffff' : '#171717');
+    if (labelV) labelV.setAttribute('fill', isDarkTheme ? '#ffffff' : '#171717');
+
+    // Lock cursor styles for center pivot
+    if (isCenterLocked) {
+      handleVGroup?.classList.remove('cursor-pointer');
+      handleVGroup?.classList.add('cursor-not-allowed');
+      if (labelV) labelV.setAttribute('fill-opacity', '0.4');
+      if (handleV) handleV.setAttribute('stroke-opacity', '0.4');
+    } else {
+      handleVGroup?.classList.remove('cursor-not-allowed');
+      handleVGroup?.classList.add('cursor-pointer');
+      if (labelV) labelV.removeAttribute('fill-opacity');
+      if (handleV) handleV.removeAttribute('stroke-opacity');
+    }
+
+    const dxA = a.x - v.x;
+    const dyA = a.y - v.y;
+    const dxB = b.x - v.x;
+    const dyB = b.y - v.y;
+
+    const lenA = Math.sqrt(dxA * dxA + dyA * dyA);
+    const lenB = Math.sqrt(dxB * dxB + dyB * dyB);
+
+    let angleRad = 0;
+    const angleStart = Math.atan2(dyA, dxA);
+    const angleEnd = Math.atan2(dyB, dxB);
+
+    if (lenA > 0 && lenB > 0) {
+      let diff = angleEnd - angleStart;
+      if (diff < 0) {
+        diff += Math.PI * 2;
+      }
+      angleRad = diff;
+    }
+    
+    currentAngle = angleRad * (180 / Math.PI);
+    
+    // Trigger gear-like click sound and haptic vibration on degree changes
+    const currentIntAngle = Math.round(currentAngle);
+    if (lastClickAngle !== -1 && currentIntAngle !== lastClickAngle) {
+      playClickSound();
+      if (navigator.vibrate) {
+        navigator.vibrate(6);
+      }
+    }
+    lastClickAngle = currentIntAngle;
+
+    const angleStr = currentAngle.toFixed(1);
+    if (angleDisplay) angleDisplay.innerText = angleStr;
+    if (compDisplay) compDisplay.innerText = Math.abs(90 - currentAngle).toFixed(1) + '°';
+    if (suppDisplay) suppDisplay.innerText = Math.abs(180 - currentAngle).toFixed(1) + '°';
+
+    if (floatingLabel && floatingText && floatingBg) {
+      floatingText.textContent = angleStr + '°';
+      const labelOffset = 24;
+      const angleBisect = Math.atan2(dyA, dxA) + (Math.atan2(dyB, dxB) - Math.atan2(dyA, dxA)) / 2;
+      let labelX = v.x + labelOffset * Math.cos(angleBisect + Math.PI);
+      let labelY = v.y + labelOffset * Math.sin(angleBisect + Math.PI);
+      
+      const rect = video.getBoundingClientRect();
+      labelX = Math.max(30, Math.min(rect.width - 30, labelX));
+      labelY = Math.max(15, Math.min(rect.height - 15, labelY));
+
+      floatingLabel.setAttribute('transform', `translate(${labelX}, ${labelY})`);
+    }
+
+    const guideGroup = document.getElementById('w-protractor-guide');
+    const guideToggle = document.getElementById('w-guide-toggle') as HTMLInputElement | null;
+    if (guideGroup) {
+      if (guideToggle && !guideToggle.checked) {
+        guideGroup.innerHTML = '';
+      } else {
+        const radius = 210; // enlarged circular guide
+        let guideHTML = '';
+        
+        // High-contrast white doughnut backing ring with black outer boundaries
+        const rOuter = radius;
+        const rInner = radius - 40;
+        guideHTML += `<path d="M ${v.x} ${v.y - rOuter} A ${rOuter} ${rOuter} 0 1 1 ${v.x - 0.01} ${v.y - rOuter} Z M ${v.x} ${v.y - rInner} A ${rInner} ${rInner} 0 1 1 ${v.x - 0.01} ${v.y - rInner} Z" fill="#ffffff" fill-opacity="0.88" stroke="${activeColor}" stroke-width="1.2" fill-rule="evenodd" />`;
+        
+        const baseAngleRad = isHandlesLinked ? angleStart : 0;
+
+        // Draw ticks every 2 degrees for fine gear feeling
+        for (let deg = 0; deg < 360; deg += 2) {
+          const rad = baseAngleRad + (deg * Math.PI) / 180;
+          const cos = Math.cos(rad);
+          const sin = Math.sin(rad);
+          
+          const isMajor = deg % 30 === 0;
+          const isMedium = deg % 10 === 0 && !isMajor;
+          const len = isMajor ? 11 : (isMedium ? 7.5 : 4.5);
+          const strokeW = isMajor ? 1.5 : 1.0;
+          
+          const x1 = v.x + radius * cos;
+          const y1 = v.y + radius * sin;
+          const x2 = v.x + (radius - len) * cos;
+          const y2 = v.y + (radius - len) * sin;
+          
+          guideHTML += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${resolvedColor}" stroke-dasharray="none" stroke-width="${strokeW}" />`;
+          
+          if (isMajor) {
+            const xl = v.x + (radius - 23) * cos;
+            const yl = v.y + (radius - 23) * sin;
+            guideHTML += `<text x="${xl}" y="${yl}" font-family="var(--font-mono)" font-size="7.5" font-weight="600" fill="${resolvedColor}" text-anchor="middle" dominant-baseline="middle">${deg}°</text>`;
+          }
+        }
+        guideGroup.innerHTML = guideHTML;
+      }
+    }
+
+
+
+    if (angleArc && lenA > 0 && lenB > 0) {
+      const arcRadius = Math.min(40, lenA * 0.4, lenB * 0.4);
+      let diff = angleEnd - angleStart;
+      if (diff < 0) {
+        diff += Math.PI * 2;
+      }
+      
+      const x1 = v.x + arcRadius * Math.cos(angleStart);
+      const y1 = v.y + arcRadius * Math.sin(angleStart);
+      const x2 = v.x + arcRadius * Math.cos(angleEnd);
+      const y2 = v.y + arcRadius * Math.sin(angleEnd);
+      
+      const isLargeArc = diff > Math.PI ? 1 : 0;
+      const pathData = `M ${v.x} ${v.y} L ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${isLargeArc} 1 ${x2} ${y2} Z`;
+      
+      angleArc.setAttribute('d', pathData);
+      angleArc.setAttribute('fill', resolvedColor === '#171717' ? 'rgba(23, 23, 23, 0.1)' : resolvedColor + '26');
+      angleArc.setAttribute('stroke', resolvedColor);
+    }
+  }
+
+  function setHandlePos(handle: HTMLElement | null, label: HTMLElement | null, group: HTMLElement | null, x: number, y: number) {
+    if (handle) {
+      handle.setAttribute('cx', String(x));
+      handle.setAttribute('cy', String(y));
+    }
+    if (label) {
+      label.setAttribute('x', String(x));
+      label.setAttribute('y', String(y));
+    }
+  }
+
+  // ----------------------------------------------------
+  // Drag Interactions
+  // ----------------------------------------------------
+  function initDrag(handleId: string) {
+    if (handleId === 'V' && isCenterLocked) return;
+    activeHandle = handleId;
+  }
+
+  handleVGroup?.addEventListener('mousedown', () => initDrag('V'));
+  handleAGroup?.addEventListener('mousedown', () => initDrag('A'));
+  handleBGroup?.addEventListener('mousedown', () => initDrag('B'));
+
+  handleVGroup?.addEventListener('touchstart', (e) => { e.preventDefault(); initDrag('V'); });
+  handleAGroup?.addEventListener('touchstart', (e) => { e.preventDefault(); initDrag('A'); });
+  handleBGroup?.addEventListener('touchstart', (e) => { e.preventDefault(); initDrag('B'); });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!activeHandle) return;
+    const coords = getNormalizedCoords(e.clientX, e.clientY);
+    dragTo(coords);
+  });
+
+  window.addEventListener('touchmove', (e) => {
+    if (!activeHandle || !e.touches[0]) return;
+    const touch = e.touches[0];
+    const coords = getNormalizedCoords(touch.clientX, touch.clientY);
+    dragTo(coords);
+  });
+
+  window.addEventListener('mouseup', () => activeHandle = null);
+  window.addEventListener('touchend', () => activeHandle = null);
+
+  function dragTo(coords: { x: number; y: number }) {
+    const fixedLengthToggle = document.getElementById('w-fixed-length-toggle') as HTMLInputElement | null;
+    const isFixed = fixedLengthToggle ? fixedLengthToggle.checked : true;
+
+    if (activeHandle === 'V') {
+      if (isCenterLocked) return;
+      const dx = coords.x - ptV.x;
+      const dy = coords.y - ptV.y;
+      ptV = coords;
+      ptA = { x: ptA.x + dx, y: ptA.y + dy };
+      ptB = { x: ptB.x + dx, y: ptB.y + dy };
+    } else if (activeHandle === 'A') {
+      const dx = coords.x - ptV.x;
+      const dy = coords.y - ptV.y;
+      let newAngle = Math.atan2(dy, dx);
+      const oldAngle = Math.atan2(ptA.y - ptV.y, ptA.x - ptV.x);
+      // Apply snap step (wSnapStep in degrees)
+      if (wSnapStep && wSnapStep > 0) {
+        let deg = newAngle * (180 / Math.PI);
+        deg = Math.round(deg / wSnapStep) * wSnapStep;
+        // magnet to nearest 30° if within threshold for easier gear snapping
+        const nearest30 = Math.round(deg / 30) * 30;
+        const diff30 = Math.min(Math.abs(deg - nearest30), 360 - Math.abs(deg - nearest30));
+        if (diff30 <= wMagnetThreshold) {
+          deg = (nearest30 + 360) % 360;
+        }
+        newAngle = deg * (Math.PI / 180);
+      }
+      let deltaAngle = newAngle - oldAngle;
+      deltaAngle = Math.atan2(Math.sin(deltaAngle), Math.cos(deltaAngle));
+      gearRotation += deltaAngle * (180 / Math.PI) * 3.0;
+
+      if (isHandlesLinked) {
+        const cosD = Math.cos(deltaAngle);
+        const sinD = Math.sin(deltaAngle);
+        const dxA = ptA.x - ptV.x;
+        const dyA = ptA.y - ptV.y;
+        ptA = {
+          x: ptV.x + (dxA * cosD - dyA * sinD),
+          y: ptV.y + (dxA * sinD + dyA * cosD)
+        };
+        const dxB = ptB.x - ptV.x;
+        const dyB = ptB.y - ptV.y;
+        ptB = {
+          x: ptV.x + (dxB * cosD - dyB * sinD),
+          y: ptV.y + (dxB * sinD + dyB * cosD)
+        };
+      } else {
+        if (isFixed) {
+          ptA = {
+            x: ptV.x + armLengthA * Math.cos(newAngle),
+            y: ptV.y + armLengthA * Math.sin(newAngle)
+          };
+        } else {
+          ptA = coords;
+          armLengthA = Math.sqrt(dx * dx + dy * dy);
+        }
+      }
+    } else if (activeHandle === 'B') {
+      const dx = coords.x - ptV.x;
+      const dy = coords.y - ptV.y;
+      let newAngle = Math.atan2(dy, dx);
+      const oldAngle = Math.atan2(ptB.y - ptV.y, ptB.x - ptV.x);
+      // Snap to wSnapStep and magnet to nearest 30° if within threshold
+      if (wSnapStep && wSnapStep > 0) {
+        let deg = newAngle * (180 / Math.PI);
+        deg = Math.round(deg / wSnapStep) * wSnapStep;
+        const nearest30b = Math.round(deg / 30) * 30;
+        const diff30b = Math.min(Math.abs(deg - nearest30b), 360 - Math.abs(deg - nearest30b));
+        if (diff30b <= wMagnetThreshold) {
+          deg = (nearest30b + 360) % 360;
+        }
+        newAngle = deg * (Math.PI / 180);
+      }
+      let deltaAngle = newAngle - oldAngle;
+      deltaAngle = Math.atan2(Math.sin(deltaAngle), Math.cos(deltaAngle));
+      gearRotation += deltaAngle * (180 / Math.PI) * 3.0;
+
+      if (isFixed) {
+        ptB = {
+          x: ptV.x + armLengthB * Math.cos(newAngle),
+          y: ptV.y + armLengthB * Math.sin(newAngle)
+        };
+      } else {
+        ptB = coords;
+        armLengthB = Math.sqrt(dx * dx + dy * dy);
+      }
+    }
+    updateOverlay();
+  }
+
+  // Handle lock lengths on toggle state change
+  document.getElementById('w-fixed-length-toggle')?.addEventListener('change', (e) => {
+    const target = e.target as HTMLInputElement;
+    if (target.checked) {
+      armLengthA = Math.sqrt(Math.pow(ptA.x - ptV.x, 2) + Math.pow(ptA.y - ptV.y, 2));
+      armLengthB = Math.sqrt(Math.pow(ptB.x - ptV.x, 2) + Math.pow(ptB.y - ptV.y, 2));
+    }
+  });
+
+  lockCenterToggle?.addEventListener('change', (e) => {
+    isCenterLocked = (e.target as HTMLInputElement).checked;
+    updateOverlay();
+  });
+
+  linkHandlesToggle?.addEventListener('change', (e) => {
+    isHandlesLinked = (e.target as HTMLInputElement).checked;
+    updateOverlay();
+  });
+
+  window.addEventListener('resize', updateOverlay);
+
+  resetPointsBtn?.addEventListener('click', () => {
+    ptV = { x: 50, y: 60 };
+    ptA = { x: 35, y: 35 };
+    ptB = { x: 65, y: 35 };
+    armLengthA = Math.sqrt(Math.pow(ptA.x - ptV.x, 2) + Math.pow(ptA.y - ptV.y, 2));
+    armLengthB = Math.sqrt(Math.pow(ptB.x - ptV.x, 2) + Math.pow(ptB.y - ptV.y, 2));
+    updateOverlay();
+  });
+
+  const wSelectA = document.getElementById('w-select-a');
+  const wSelectB = document.getElementById('w-select-b');
+  const wDecrement = document.getElementById('w-decrement');
+  const wIncrement = document.getElementById('w-increment');
+
+  function updateWSelectionButtons() {
+    if (wSelectA && wSelectB) {
+      if (wActiveLine === 'A') {
+        wSelectA.classList.add('border-[#171717]', 'bg-[#171717]', 'text-white');
+        wSelectB.classList.remove('border-[#171717]', 'bg-[#171717]', 'text-white');
+        wSelectB.classList.add('border-hairline', 'bg-white', 'text-body');
+      } else {
+        wSelectB.classList.add('border-[#171717]', 'bg-[#171717]', 'text-white');
+        wSelectA.classList.remove('border-[#171717]', 'bg-[#171717]', 'text-white');
+        wSelectA.classList.add('border-hairline', 'bg-white', 'text-body');
+      }
+    }
+  }
+
+  wSelectA?.addEventListener('click', () => { wActiveLine = 'A'; updateWSelectionButtons(); });
+  wSelectB?.addEventListener('click', () => { wActiveLine = 'B'; updateWSelectionButtons(); });
+
+  // rotate point around center by degrees
+  function rotatePointAround(cx: number, cy: number, x: number, y: number, deg: number) {
+    const rad = deg * Math.PI / 180;
+    const dx = x - cx;
+    const dy = y - cy;
+    const cos = Math.cos(rad);
+    const sin = Math.sin(rad);
+    return {
+      x: cx + dx * cos - dy * sin,
+      y: cy + dx * sin + dy * cos
+    };
+  }
+
+  wDecrement?.addEventListener('click', () => {
+    const delta = -1;
+    if (wActiveLine === 'A') {
+      const newPt = rotatePointAround(ptV.x, ptV.y, ptA.x, ptA.y, delta);
+      ptA = newPt;
+      armLengthA = Math.sqrt(Math.pow(ptA.x - ptV.x, 2) + Math.pow(ptA.y - ptV.y, 2));
+    } else {
+      const newPt = rotatePointAround(ptV.x, ptV.y, ptB.x, ptB.y, delta);
+      ptB = newPt;
+      armLengthB = Math.sqrt(Math.pow(ptB.x - ptV.x, 2) + Math.pow(ptB.y - ptV.y, 2));
+    }
+    updateOverlay();
+  });
+
+  wIncrement?.addEventListener('click', () => {
+    const delta = 1;
+    if (wActiveLine === 'A') {
+      const newPt = rotatePointAround(ptV.x, ptV.y, ptA.x, ptA.y, delta);
+      ptA = newPt;
+      armLengthA = Math.sqrt(Math.pow(ptA.x - ptV.x, 2) + Math.pow(ptA.y - ptV.y, 2));
+    } else {
+      const newPt = rotatePointAround(ptV.x, ptV.y, ptB.x, ptB.y, delta);
+      ptB = newPt;
+      armLengthB = Math.sqrt(Math.pow(ptB.x - ptV.x, 2) + Math.pow(ptB.y - ptV.y, 2));
+    }
+    updateOverlay();
+  });
+
+  // initialize selection UI
+  updateWSelectionButtons();
+
+  // ----------------------------------------------------
+  // Settings Changes
+  // ----------------------------------------------------
+  thicknessSlider?.addEventListener('input', (e) => {
+    const target = e.target as HTMLInputElement;
+    activeThickness = parseInt(target.value);
+    if (thicknessVal) thicknessVal.textContent = activeThickness + 'px';
+    
+    if (handleA) handleA.setAttribute('r', String(8 + activeThickness / 2));
+    if (handleB) handleB.setAttribute('r', String(8 + activeThickness / 2));
+    if (handleV) handleV.setAttribute('r', String(10 + activeThickness / 2));
+    updateOverlay();
+  });
+
+  colorButtons.forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const target = e.currentTarget as HTMLButtonElement;
+      const isDark = document.documentElement.classList.contains('dark');
+      const color = isDark && target.dataset.darkColor ? target.dataset.darkColor : (target.dataset.color || '#6366f1');
+      
+      colorButtons.forEach((b) => b.classList.remove('ring-2', 'ring-primary'));
+      target.classList.add('ring-2', 'ring-primary');
+
+      activeColor = color;
+      updateOverlay();
+    });
+  });
+
+    // Snap buttons
+    const wSnapButtons = document.querySelectorAll('#w-snap-options [data-snap]');
+    wSnapButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        wSnapButtons.forEach(b => {
+          b.classList.remove('border-[#171717]', 'bg-[#171717]', 'text-white');
+          b.classList.add('border-hairline', 'bg-white', 'text-mute');
+        });
+        const target = e.currentTarget as HTMLButtonElement;
+        target.classList.remove('border-hairline', 'bg-white', 'text-mute');
+        target.classList.add('border-[#171717]', 'bg-[#171717]', 'text-white');
+        wSnapStep = parseFloat(target.dataset.snap || '1');
+      });
+    });
+
+  // Label mode for handles (A/B vs L1/L2)
+  function wUpdateLabelMode(useAB: boolean) {
+    if (labelA) labelA.textContent = useAB ? 'A' : 'L1';
+    if (labelB) labelB.textContent = useAB ? 'B' : 'L2';
+    if (labelV) labelV.textContent = 'V';
+    updateOverlay();
+  }
+
+  if (wToggleLabelAB) {
+    wToggleLabelAB.addEventListener('change', (e) => {
+      const checked = (e.target as HTMLInputElement).checked;
+      wUpdateLabelMode(checked);
+    });
+    // initialize default (A/B)
+    wUpdateLabelMode(wToggleLabelAB.checked);
+  }
+
+  // Copy to Clipboard
+  copyBtn?.addEventListener('click', () => {
+    navigator.clipboard.writeText(currentAngle.toFixed(1) + '°')
+      .then(() => {
+        const origText = copyBtn!.innerHTML;
+        copyBtn!.innerHTML = 'Copied!';
+        setTimeout(() => copyBtn!.innerHTML = origText, 1500);
+      });
+  });
+
+  document.getElementById('w-guide-toggle')?.addEventListener('change', updateOverlay);
+
+  (window as any).resetWebcamProtractorGuide = () => {
+    updateOverlay();
+  };
+</script>
+
+<style>
+  @media (max-width: 480px) {
+    #camera-container {
+      width: 100vw !important;
+      position: relative;
+      left: 50%;
+      right: 50%;
+      margin-left: -50vw !important;
+      margin-right: -50vw !important;
+      border-left: none !important;
+      border-right: none !important;
+      border-radius: 0 !important;
+    }
+  }
+
+  #w-mobile-rotation-note {
+    display: none;
+  }
+  @media (max-width: 480px) and (orientation: portrait) {
+    #w-mobile-rotation-note {
+      display: block;
+    }
+  }
+</style>
